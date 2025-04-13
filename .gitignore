@@ -2,3 +2,10 @@
 .env
 .idea
 
+__pycache__
+api/__pycache__
+db_handlers/__pycache__
+handlers/__pycache__
+keyboards/__pycache__
+middlewares/__pycache__
+storage/__pycache__
