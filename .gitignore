@@ -1,6 +1,7 @@
 .venv
 .env
 .idea
+test.py
 
 __pycache__
 api/__pycache__
