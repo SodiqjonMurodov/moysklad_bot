@@ -74,3 +74,5 @@ async def get_balance_counterparty(counterparty_id: str):
         return response.json()
     return None
 
+
+

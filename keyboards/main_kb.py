@@ -19,14 +19,23 @@ main_buttons = ReplyKeyboardMarkup(
 )
 
 
-def get_navigation_keyboard(index: int, total: int):
+def get_promo_nav_keyboard(index: int, total: int):
     buttons = []
 
     if index > 0:
-        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prev_{index - 1}_{total}"))
+        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prevpromo_{index - 1}_{total}"))
     if index < total - 1:
-        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"next_{index + 1}_{total}"))
+        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"nextpromo_{index + 1}_{total}"))
 
     return InlineKeyboardMarkup(inline_keyboard=[buttons])
 
 
+def get_news_nav_keyboard(index: int, total: int):
+    buttons = []
+
+    if index > 0:
+        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prevnew_{index - 1}_{total}"))
+    if index < total - 1:
+        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"nextnew_{index + 1}_{total}"))
+
+    return InlineKeyboardMarkup(inline_keyboard=[buttons])

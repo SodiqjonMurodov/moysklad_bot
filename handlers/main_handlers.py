@@ -3,10 +3,11 @@ from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, BotCommand, FSInputFile, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
-from keyboards.main_kb import main_buttons, get_navigation_keyboard
+from keyboards.main_kb import main_buttons, get_promo_nav_keyboard, get_news_nav_keyboard
 from keyboards.auth_kb import phone_btn
 from db_handlers.db_users import is_user_authenticated, get_user_data
 from db_handlers.db_promotions import load_active_promotions
+from db_handlers.db_news import load_news
 from handlers.auth_handlers import Reg
 from api.counterparty import get_balance_counterparty
 
@@ -24,7 +25,6 @@ async def on_startup(bot: Bot):
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
-    # /start handleri funksiyasi
     greeting_text = """
 <b>👋 Assalomu alaykum va Telegram botimizga xush kelibsiz!</b>
 
@@ -47,6 +47,7 @@ Bu bot orqali siz quyidagi bo‘limlardan foydalanishingiz mumkin:
     return await message.answer(text=greeting_text, reply_markup=main_buttons)
 
 
+# About Us Section
 @router.message(F.text == "ℹ️ Biz haqimizda")
 async def cmd_about_us(message: Message):
     about_text = """
@@ -80,7 +81,7 @@ Kompaniyamiz quyidagi yo‘nalishlarda faoliyat yuritadi:
 """
     await message.answer(text=about_text, reply_markup=main_buttons)
 
-
+# My Balance Section
 @router.message(F.text == "💳 Mening balansim")
 async def cmd_counterparty_balance(message: Message):
     user = await get_user_data(chat_id=message.from_user.id)
@@ -108,6 +109,7 @@ async def cmd_counterparty_balance(message: Message):
     await message.answer(text=balance_text, reply_markup=main_buttons)
 
 
+# Promotions Section
 async def send_promo_page(message: Message, index: int):
     promos = load_active_promotions()
     total = len(promos)
@@ -122,13 +124,12 @@ async def send_promo_page(message: Message, index: int):
         return await message.answer("⚠️ Bunday aksiya sahifasi mavjud emas.")
 
     promo = promos[index]
-    kb = get_navigation_keyboard(index=index, total=total)
+    kb = get_promo_nav_keyboard(index=index, total=total)
     text = f"""
 <b>{promo["title"]}</b>
 
 {promo["description"]}
 """
-
     return await message.answer_photo(photo=FSInputFile(promo["image"]), caption=text, reply_markup=kb)
 
 
@@ -137,7 +138,7 @@ async def show_promotions(message: Message, state: FSMContext):
     await send_promo_page(message, index=0)
 
 
-@router.callback_query(lambda c: c.data.startswith(("prev_", "next_")))
+@router.callback_query(lambda c: c.data.startswith(("prevpromo_", "nextpromo_")))
 async def navigate_posts(callback_query: CallbackQuery):
     action, index, total = callback_query.data.split("_")
     index, total = int(index), int(total)
@@ -149,4 +150,42 @@ async def navigate_posts(callback_query: CallbackQuery):
     return await send_promo_page(callback_query.message, index)
 
 
+# News Section
+async def send_new_page(message: Message, index: int):
+    news = load_news()
+    total = len(news)
+    if total == 0:
+        return await message.answer("❌ Hozircha faol yangiliklar mavjud emas.")
+
+    if not isinstance(index, int):
+        return await message.answer("⚠️ Noto‘g‘ri sahifa indeksi.")
+
+    if index < 0 or index >= total:
+        return await message.answer("⚠️ Bunday yangilik sahifasi mavjud emas.")
+
+    new = news[index]
+    kb = get_news_nav_keyboard(index=index, total=total)
+    text = f"""
+<b>{new["title"]}</b>
+
+{new["description"]}
+"""
+    return await message.answer_photo(photo=FSInputFile(new["image"]), caption=text, reply_markup=kb)
+
+
+@router.message(F.text == "📰 Yangiliklar")
+async def show_news(message: Message, state: FSMContext):
+    await send_new_page(message, index=0)
+
+
+@router.callback_query(lambda c: c.data.startswith(("prevnew_", "nextnew_")))
+async def navigate_news(callback_query: CallbackQuery):
+    action, index, total = callback_query.data.split("_")
+    index, total = int(index), int(total)
+
+    if 0 <= index <= total :
+        await callback_query.message.delete()
+
+    await callback_query.answer("")
+    return await send_new_page(callback_query.message, index)
 
