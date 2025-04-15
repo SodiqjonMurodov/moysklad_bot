@@ -62,3 +62,15 @@ async def create_counterparty(phone: str, name: str):
         return None
 
     return response.json()
+
+
+async def get_balance_counterparty(counterparty_id: str):
+    url = f"{BASE_URL}/report/counterparty/{counterparty_id}"
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=HEADERS)
+
+    if response.status_code == 200:
+        return response.json()
+    return None
+

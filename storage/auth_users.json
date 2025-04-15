@@ -1,14 +1,16 @@
 {
-    "8186790277": {
-        "full_name": "Test bot user",
-        "phone_number": "+998931137890",
-        "created_at": "2025-04-14T10:33:27.817349",
-        "updated_at": "2025-04-14T10:33:27.817349"
-    },
     "6808301881": {
         "full_name": "Sodiqjon test",
         "phone_number": "+998914149027",
-        "created_at": "2025-04-14T10:34:13.368363",
-        "updated_at": "2025-04-14T10:34:13.368363"
+        "counterparty_id": "193203a5-18f2-11f0-0a80-060d007032d8",
+        "created_at": "2025-04-14T11:12:30.006250",
+        "updated_at": "2025-04-14T11:12:30.006250"
+    },
+    "8186790277": {
+        "full_name": "Test bot user",
+        "phone_number": "+998931137890",
+        "counterparty_id": "b243d83e-18f0-11f0-0a80-1a8d0027abd4",
+        "created_at": "2025-04-14T11:22:50.091123",
+        "updated_at": "2025-04-14T11:22:50.091123"
     }
 }

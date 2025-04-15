@@ -1,7 +1,8 @@
 import json
+import aiofiles
+
 from datetime import datetime
 from pathlib import Path
-import aiofiles
 
 DB_PATH = Path("storage/auth_users.json")
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)

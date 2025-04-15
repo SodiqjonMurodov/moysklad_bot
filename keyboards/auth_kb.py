@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-request_phone_number_button = ReplyKeyboardMarkup(
+phone_btn = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="📱 Raqamni yuborish", request_contact=True)]
     ],
