@@ -71,7 +71,7 @@ async def get_balance_counterparty(counterparty_id: str):
         response = await client.get(url, headers=HEADERS)
 
     if response.status_code == 200:
-        return response.json()
+        return dict(response.json())
     return None
 
 

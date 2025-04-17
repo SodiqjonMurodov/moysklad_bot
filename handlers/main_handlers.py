@@ -1,15 +1,19 @@
 from aiogram import Router, Bot, F
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart
 from aiogram.types import Message, BotCommand, FSInputFile, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
-from keyboards.main_kb import main_buttons, get_promo_nav_keyboard, get_news_nav_keyboard
+from keyboards.main_kb import main_buttons, get_promos_nav, get_news_nav, get_purchase_history_nav
 from keyboards.auth_kb import phone_btn
 from db_handlers.db_users import is_user_authenticated, get_user_data
 from db_handlers.db_promotions import load_active_promotions
 from db_handlers.db_news import load_news
 from handlers.auth_handlers import Reg
 from api.counterparty import get_balance_counterparty
+from api.demand import get_demands_by_counterparty, get_positions_from_demand
+from api.salesreturn import get_salesreturns_by_counterparty, get_positions_from_salesreturn
+from api.objects import get_object_by_url
+from datetime import datetime
 
 router = Router()
 
@@ -25,6 +29,7 @@ async def on_startup(bot: Bot):
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
+    await state.clear()
     greeting_text = """
 <b>👋 Assalomu alaykum va Telegram botimizga xush kelibsiz!</b>
 
@@ -39,17 +44,18 @@ Bu bot orqali siz quyidagi bo‘limlardan foydalanishingiz mumkin:
 
 <b>💚 Oilamizga marhamat!</b>
 """
-    if is_user_authenticated(chat_id=message.from_user.id):
-        phone_request_text = "📞 Iltimos, telefon raqamingizni pastdagi tugmani bosgan holda yuboring:"
+    if not is_user_authenticated(chat_id=int(message.from_user.id)):
+        phone_request_text = "📞 Iltimos, ro'yxatdan o'tish uchun telefon raqamingizni pastdagi tugmani bosgan holda yuboring:"
         await state.set_state(Reg.phone_number)
         return await message.answer(text=phone_request_text, reply_markup=phone_btn)
 
     return await message.answer(text=greeting_text, reply_markup=main_buttons)
 
 
-# About Us Section
+# Biz haqimizda bo'limi
 @router.message(F.text == "ℹ️ Biz haqimizda")
-async def cmd_about_us(message: Message):
+async def cmd_about_us(message: Message, state: FSMContext):
+    await state.clear()
     about_text = """
 <b>ℹ️ Biz haqimizda</b>
 
@@ -81,9 +87,11 @@ Kompaniyamiz quyidagi yo‘nalishlarda faoliyat yuritadi:
 """
     await message.answer(text=about_text, reply_markup=main_buttons)
 
-# My Balance Section
+
+# Mening balansim bo'limi
 @router.message(F.text == "💳 Mening balansim")
-async def cmd_counterparty_balance(message: Message):
+async def cmd_counterparty_balance(message: Message, state: FSMContext):
+    await state.clear()
     user = await get_user_data(chat_id=message.from_user.id)
     counterparty = await get_balance_counterparty(counterparty_id=str(user.get("counterparty_id")))
     balance_text = f"""
@@ -109,11 +117,10 @@ async def cmd_counterparty_balance(message: Message):
     await message.answer(text=balance_text, reply_markup=main_buttons)
 
 
-# Promotions Section
+# Aksiyalar bo'limi
 async def send_promo_page(message: Message, index: int):
     promos = load_active_promotions()
     total = len(promos)
-    print(index)
     if total == 0:
         return await message.answer("❌ Hozircha faol aksiyalar mavjud emas.")
 
@@ -124,7 +131,7 @@ async def send_promo_page(message: Message, index: int):
         return await message.answer("⚠️ Bunday aksiya sahifasi mavjud emas.")
 
     promo = promos[index]
-    kb = get_promo_nav_keyboard(index=index, total=total)
+    kb = get_promos_nav(index=index, total=total)
     text = f"""
 <b>{promo["title"]}</b>
 
@@ -135,27 +142,28 @@ async def send_promo_page(message: Message, index: int):
 
 @router.message(F.text == "🎁 Aksiyalar")
 async def show_promotions(message: Message, state: FSMContext):
+    await state.clear()
     await send_promo_page(message, index=0)
 
 
-@router.callback_query(lambda c: c.data.startswith(("prevpromo_", "nextpromo_")))
+@router.callback_query(lambda c: c.data.startswith(("prevPromo_", "nextPromo_")))
 async def navigate_posts(callback_query: CallbackQuery):
     action, index, total = callback_query.data.split("_")
     index, total = int(index), int(total)
 
-    if 0 <= index <= total :
+    if 0 <= index <= total:
         await callback_query.message.delete()
 
     await callback_query.answer("")
     return await send_promo_page(callback_query.message, index)
 
 
-# News Section
+# Yangiliklar bo'limi
 async def send_new_page(message: Message, index: int):
     news = load_news()
     total = len(news)
     if total == 0:
-        return await message.answer("❌ Hozircha faol yangiliklar mavjud emas.")
+        return await message.answer("❌ Hozircha yangiliklar mavjud emas.")
 
     if not isinstance(index, int):
         return await message.answer("⚠️ Noto‘g‘ri sahifa indeksi.")
@@ -164,7 +172,7 @@ async def send_new_page(message: Message, index: int):
         return await message.answer("⚠️ Bunday yangilik sahifasi mavjud emas.")
 
     new = news[index]
-    kb = get_news_nav_keyboard(index=index, total=total)
+    kb = get_news_nav(index=index, total=total)
     text = f"""
 <b>{new["title"]}</b>
 
@@ -175,17 +183,139 @@ async def send_new_page(message: Message, index: int):
 
 @router.message(F.text == "📰 Yangiliklar")
 async def show_news(message: Message, state: FSMContext):
+    await state.clear()
     await send_new_page(message, index=0)
 
 
-@router.callback_query(lambda c: c.data.startswith(("prevnew_", "nextnew_")))
+@router.callback_query(lambda c: c.data.startswith(("prevNew_", "nextNew_")))
 async def navigate_news(callback_query: CallbackQuery):
     action, index, total = callback_query.data.split("_")
     index, total = int(index), int(total)
 
-    if 0 <= index <= total :
+    if 0 <= index <= total:
         await callback_query.message.delete()
 
     await callback_query.answer("")
     return await send_new_page(callback_query.message, index)
+
+
+# Xaridlar tarixi bo'limi
+async def get_sorted_history_data(message: Message):
+    """
+    Xaridlar tarixini vaqti bo'yicha sortirovkalash
+
+    """
+    user = await get_user_data(message.from_user.id)
+    if not user:
+        return await message.answer(text="Iltimos ro'yxatdan o'tganingizga ishonch hosil qiling")
+
+    demands = await get_demands_by_counterparty(user["counterparty_id"])
+    sales_returns = await get_salesreturns_by_counterparty(user["counterparty_id"])
+    history_data = []
+
+    if demands:
+        history_data.extend(demands)
+    if sales_returns:
+        history_data.extend(sales_returns)
+
+    sorted_history_data_desc = sorted(history_data,
+                                      key=lambda x: datetime.strptime(x["moment"], "%Y-%m-%d %H:%M:%S.%f"),
+                                      reverse=True)
+    return sorted_history_data_desc
+
+
+async def send_purchase_history_page(message: Message, sorted_data: list, index: int):
+    wait_msg = await message.answer("⏳ Iltimos, kuting...")
+    total = len(sorted_data)
+    kb = get_purchase_history_nav(index=index, total=total)
+
+    if total == 0:
+        await wait_msg.delete()
+        return await message.answer("❌ Sizda hozircha xaridlar tarixi mavjud emas.")
+
+    if not isinstance(index, int):
+        await wait_msg.delete()
+        return await message.answer("⚠️ Noto‘g‘ri sahifa indeksi.")
+
+    if index < 0 or index >= total:
+        await wait_msg.delete()
+        return await message.answer("⚠️ Bunday sahifasi mavjud emas.")
+
+    data = sorted_data[index]
+    positions = []
+    doc_type = ""
+    # Dokument turini aniqlash
+    if "salesreturn" in data["meta"]["href"]:
+        doc_type = "Vozvrat"
+        positions = await get_positions_from_salesreturn(data["id"])
+    elif "demand" in data["meta"]["href"]:
+        doc_type = "Sotuv"
+        positions = await get_positions_from_demand(data["id"])
+
+    strpositions = "" # Dokumentdagi tovarlar ro'yxati
+    product_order = 1 # Tovarlarni tartib raqami
+    # Valyutasini olish
+    currency_url = data["rate"]["currency"]["meta"]["href"]
+    currency = await get_object_by_url(currency_url)
+    if positions:
+        for position in positions:
+            # Mahsulot ma'lumotlarini olish
+            product_url = position["assortment"]["meta"]["href"]
+            product = await get_object_by_url(product_url)
+            # O'lchov birligini olish
+            uomname_url = product["uom"]["meta"]["href"]
+            uomname = await get_object_by_url(uomname_url)
+            strpositions += f"📌 {product_order}.<b>{product['name']}</b>\n\t\t 🔢 Miqdori: {position['quantity']} {uomname['name']}\n\t\t 💰 Narxi: {position['price']} {currency['name']}\n\t\t 🎁 Skidka: {position['discount']}\n\n"
+            product_order += 1
+
+    history_text = f"""
+📃 <b>{doc_type} №{data["name"]}</b>
+🕒 <i>{data["moment"]}</i>
+
+📦 <b>Tovarlar ro'yxati:</b>
+{strpositions}
+💵 <b>{doc_type} summasi:</b> {data["sum"]} {currency["name"]}
+    """
+    await wait_msg.delete()
+    return await message.answer(text=history_text, reply_markup=kb)
+
+
+@router.message(F.text == "🧾 Xaridlar tarixi")
+async def show_purchase_history(message: Message, state: FSMContext):
+    await state.clear()
+    sorted_data = await get_sorted_history_data(message)
+    await state.update_data(sorted_data=sorted_data)
+    await send_purchase_history_page(message, sorted_data, index=0)
+
+
+@router.callback_query(lambda c: c.data.startswith(("prevSaleHistory_", "nextSaleHistory_")))
+async def navigate_purchase_history(callback_query: CallbackQuery, state: FSMContext):
+    action, index, total = callback_query.data.split("_")
+    index, total = int(index), int(total)
+
+    if 0 <= index <= total:
+        await callback_query.message.delete()
+
+    data = await state.get_data()
+    sorted_data = data.get("sorted_data", [])
+
+    if not sorted_data:
+        return await callback_query.message.answer("❌ Xaridlar tarixi ma'lumotlarini topib bo'lmadi.")
+
+    await callback_query.answer("")
+    return await send_purchase_history_page(callback_query.message, sorted_data, index)
+
+
+# Taklif va shikoyatlar bo'limi
+@router.message(F.text == "✍️ Taklif va shikoyatlar")
+async def show_feedback(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer(
+        "✍️ <b>Taklif va shikoyatlar bo‘limi</b>\n\n"
+        "Sizning fikringiz biz uchun juda muhim!\n"
+        "Iltimos, o‘zingizni qiziqtirgan masala, taklif yoki shikoyatingizni shu yerga yozib qoldiring.\n\n"
+        "📌 Biz barcha xabarlarni diqqat bilan ko‘rib chiqamiz va imkon qadar tez orada javob beramiz."
+    )
+
+
 

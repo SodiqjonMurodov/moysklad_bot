@@ -19,23 +19,36 @@ main_buttons = ReplyKeyboardMarkup(
 )
 
 
-def get_promo_nav_keyboard(index: int, total: int):
+def get_promos_nav(index: int, total: int):
     buttons = []
 
     if index > 0:
-        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prevpromo_{index - 1}_{total}"))
+        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prevPromo_{index - 1}_{total}"))
     if index < total - 1:
-        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"nextpromo_{index + 1}_{total}"))
+        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"nextPromo_{index + 1}_{total}"))
 
     return InlineKeyboardMarkup(inline_keyboard=[buttons])
 
 
-def get_news_nav_keyboard(index: int, total: int):
+def get_news_nav(index: int, total: int):
     buttons = []
 
     if index > 0:
-        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prevnew_{index - 1}_{total}"))
+        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prevNew_{index - 1}_{total}"))
     if index < total - 1:
-        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"nextnew_{index + 1}_{total}"))
+        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"nextNew_{index + 1}_{total}"))
 
     return InlineKeyboardMarkup(inline_keyboard=[buttons])
+
+
+def get_purchase_history_nav(index: int, total: int):
+    buttons = []
+
+    if index > 0:
+        buttons.append(InlineKeyboardButton(text="⬅️ Previous", callback_data=f"prevSaleHistory_{index - 1}_{total}"))
+    if index < total - 1:
+        buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"nextSaleHistory_{index + 1}_{total}"))
+
+    return InlineKeyboardMarkup(inline_keyboard=[buttons])
+
+

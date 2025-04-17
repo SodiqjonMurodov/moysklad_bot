@@ -1,6 +1,6 @@
 import json
 import aiofiles
-
+import asyncio
 from datetime import datetime
 from pathlib import Path
 
@@ -25,7 +25,11 @@ async def save_users(data: dict):
 
 async def is_user_authenticated(chat_id: int) -> bool:
     users = await load_users()
-    return str(chat_id) in users
+    print(users)
+    return str(chat_id) in users.keys()
+
+r = asyncio.run(is_user_authenticated(6498362745))
+print(r)
 
 
 async def set_user_authenticated(chat_id: int, user_data: dict):
@@ -45,3 +49,5 @@ async def set_user_authenticated(chat_id: int, user_data: dict):
 async def get_user_data(chat_id: int) -> dict:
     users = await load_users()
     return users.get(str(chat_id), {})
+
+

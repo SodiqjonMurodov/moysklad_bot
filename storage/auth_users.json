@@ -12,5 +12,12 @@
         "counterparty_id": "b243d83e-18f0-11f0-0a80-1a8d0027abd4",
         "created_at": "2025-04-14T11:22:50.091123",
         "updated_at": "2025-04-14T11:22:50.091123"
+    },
+    "6498362745": {
+        "full_name": "Jasurbek test",
+        "phone_number": "998947806100",
+        "counterparty_id": "1207cfec-1abe-11f0-0a80-183f001b96a6",
+        "created_at": "2025-04-16T17:26:50.010423",
+        "updated_at": "2025-04-16T17:26:50.010423"
     }
 }

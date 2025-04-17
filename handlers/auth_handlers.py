@@ -50,7 +50,7 @@ async def got_phone(message: Message, state: FSMContext):
         await message.answer(text="🎉 Siz ro'yxatdan muvaffaqiyatli o'tdingiz.", reply_markup=main_buttons)
         await state.clear()
     else:
-        await state.update_data(phone_number=phone, counterparty_id=counterparty.get("id", ""))
+        await state.update_data(phone_number=phone)
         await message.answer(text="👤 Endi ismingizni kiriting:", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Reg.full_name)
 
@@ -69,8 +69,7 @@ async def got_name(message: Message, state: FSMContext):
         user_data = {
             "full_name": name,
             "phone_number": data['phone_number'],
-            "counterparty_id": data['counterparty_id']
-
+            "counterparty_id": result['id']
         }
         await set_user_authenticated(chat_id=chat_id, user_data=user_data)
         await message.answer(text=f"🎉 Ro'yxatdan muvaffaqiyatli o'tdingiz, {name}!", reply_markup=main_buttons)
