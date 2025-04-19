@@ -4,7 +4,7 @@ from pathlib import Path
 PROMOTIONS_PATH = Path("storage/promotions.json")
 
 
-def load_active_promotions() -> list[dict]:
+async def load_promotions(is_active=True) -> list[dict]:
     if not PROMOTIONS_PATH.exists():
         return []
 
@@ -14,8 +14,13 @@ def load_active_promotions() -> list[dict]:
         except json.JSONDecodeError:
             return []
 
-    return [
-        promo for promo in data.values()
-        if promo.get("active") is True
-    ]
+    if is_active:
+        return [promo for promo in data.values() if promo.get("active") is True]
+    else:
+        return data
+
+async def get_promotion():
+    promos = load_promotions(is_active=False)
+
+
 

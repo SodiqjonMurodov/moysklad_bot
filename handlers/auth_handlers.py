@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 from keyboards.auth_kb import phone_btn
-from keyboards.main_kb import main_buttons
+from keyboards.main_kb import get_main_buttons
 from api.counterparty import create_counterparty, add_counterparty_to_group, check_counterparty_by_phone
 from db_handlers.db_users import is_user_authenticated, set_user_authenticated
 
@@ -37,6 +37,8 @@ async def got_phone(message: Message, state: FSMContext):
             await add_counterparty_to_group(counterparty, tag_name)
 
         chat_id = message.from_user.id
+        main_kb = await get_main_buttons(chat_id)
+
         await state.update_data(phone_number=phone)
         is_user_auth = await is_user_authenticated(chat_id)
 
@@ -47,11 +49,11 @@ async def got_phone(message: Message, state: FSMContext):
                 "counterparty_id": counterparty.get("id", "")
             }
             await set_user_authenticated(chat_id=chat_id, user_data=user_data)
-        await message.answer(text="🎉 Siz ro'yxatdan muvaffaqiyatli o'tdingiz.", reply_markup=main_buttons)
+        await message.answer(text="🎉 Siz ro'yxatdan muvaffaqiyatli o'tdingiz.", reply_markup=main_kb)
         await state.clear()
     else:
         await state.update_data(phone_number=phone)
-        await message.answer(text="👤 Endi ismingizni kiriting:", reply_markup=ReplyKeyboardRemove())
+        await message.answer(text="👤 Endi to'liq ism va familiyangizni kiriting:", reply_markup=ReplyKeyboardRemove())
         await state.set_state(Reg.full_name)
 
 
@@ -60,6 +62,7 @@ async def got_name(message: Message, state: FSMContext):
     name = message.text
     data = await state.get_data()
     chat_id = message.from_user.id
+    main_kb = await get_main_buttons(chat_id)
 
     result = await create_counterparty(name=name, phone=data['phone_number'])
     if result is None:
@@ -72,5 +75,6 @@ async def got_name(message: Message, state: FSMContext):
             "counterparty_id": result['id']
         }
         await set_user_authenticated(chat_id=chat_id, user_data=user_data)
-        await message.answer(text=f"🎉 Ro'yxatdan muvaffaqiyatli o'tdingiz, {name}!", reply_markup=main_buttons)
+        await message.answer(text=f"🎉 Ro'yxatdan muvaffaqiyatli o'tdingiz, {name}!", reply_markup=main_kb)
     await state.clear()
+
