@@ -1,7 +1,7 @@
 from datetime import datetime
 from aiogram import Router, Bot, F
-from aiogram.filters import CommandStart
-from aiogram.types import Message, BotCommand, FSInputFile, CallbackQuery
+from aiogram.filters import CommandStart, Command
+from aiogram.types import Message, BotCommand, FSInputFile, CallbackQuery, MessageEntity
 from aiogram.fsm.context import FSMContext
 
 from keyboards.main_kb import get_main_buttons, get_promos_nav, get_news_nav, get_purchase_history_nav
@@ -340,4 +340,22 @@ Iltimos, o‘zingizni qiziqtirgan masala, taklif yoki shikoyatingizni shu yerga 
     await message.answer(text=feedback_txt, reply_markup=main_kb)
 
 
+@router.message(Command("spoiler"))
+async def send_spoiler(message: Message):
+    text = "Bu yerda sirli matn bor!"
+
+    # Spoilerni qayerda boshlash va uzunligi
+    spoiler_offset = 13  # "sirli matn" boshi
+    spoiler_length = 10  # "sirli matn" uzunligi
+
+    entity = MessageEntity(
+        type="spoiler",
+        offset=spoiler_offset,
+        length=spoiler_length
+    )
+
+    await message.answer(
+        text=text,
+        entities=[entity]
+    )
 

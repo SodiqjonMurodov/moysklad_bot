@@ -1,6 +1,7 @@
 .venv
 .env
 .idea
+db.sqlite3
 test.py
 
 __pycache__
@@ -11,4 +12,5 @@ keyboards/__pycache__
 middlewares/__pycache__
 storage/__pycache__
 utils/__pycache__
+database/__pycache__
 
