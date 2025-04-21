@@ -7,7 +7,8 @@ from aiogram.fsm.context import FSMContext
 from keyboards.auth_kb import phone_btn
 from keyboards.main_kb import get_main_buttons
 from api.counterparty import create_counterparty, add_counterparty_to_group, check_counterparty_by_phone
-from db_handlers.db_users import is_user_authenticated, set_user_authenticated
+from database.requests import is_user_authenticated, create_user
+from database.models import User
 
 router = Router()
 
@@ -43,12 +44,13 @@ async def got_phone(message: Message, state: FSMContext):
         is_user_auth = await is_user_authenticated(chat_id)
 
         if not is_user_auth:
-            user_data = {
-                "full_name": counterparty.get("name", ""),
-                "phone_number": message.contact.phone_number,
-                "counterparty_id": counterparty.get("id", "")
-            }
-            await set_user_authenticated(chat_id=chat_id, user_data=user_data)
+            user_data = User(
+                tg_id=chat_id,
+                api_id=counterparty.get("id", ""),
+                full_name=counterparty.get("name", ""),
+                phone_number=message.contact.phone_number
+            )
+            await create_user(query=user_data)
         await message.answer(text="🎉 Siz ro'yxatdan muvaffaqiyatli o'tdingiz.", reply_markup=main_kb)
         await state.clear()
     else:
@@ -64,17 +66,18 @@ async def got_name(message: Message, state: FSMContext):
     chat_id = message.from_user.id
     main_kb = await get_main_buttons(chat_id)
 
-    result = await create_counterparty(name=name, phone=data['phone_number'])
-    if result is None:
+    counterparty = await create_counterparty(name=name, phone=data['phone_number'])
+    if counterparty is None:
         await message.answer(text=f"❌ Ro'yxatdan o'tishda xatolik yuz berdi, iltimos qayta urinib ko'ring!", reply_markup=ReplyKeyboardRemove())
     else:
         await state.update_data(full_name=name)
-        user_data = {
-            "full_name": name,
-            "phone_number": data['phone_number'],
-            "counterparty_id": result['id']
-        }
-        await set_user_authenticated(chat_id=chat_id, user_data=user_data)
+        user_data = User(
+            tg_id=chat_id,
+            api_id=counterparty.get("id", ""),
+            full_name=counterparty.get("name", ""),
+            phone_number=data['phone_number']
+        )
+        await create_user(query=user_data)
         await message.answer(text=f"🎉 Ro'yxatdan muvaffaqiyatli o'tdingiz, {name}!", reply_markup=main_kb)
     await state.clear()
 

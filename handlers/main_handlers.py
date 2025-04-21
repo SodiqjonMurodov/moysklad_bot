@@ -1,29 +1,35 @@
+import asyncio
 from datetime import datetime
-from aiogram import Router, Bot, F
-from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, BotCommand, FSInputFile, CallbackQuery, MessageEntity
-from aiogram.fsm.context import FSMContext
 
+from aiogram import Router, F
+from aiogram.filters import CommandStart
+from aiogram.types import Message, BotCommand, CallbackQuery
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.exceptions import TelegramBadRequest
+
+from core.bot import bot
+from handlers.admin_handlers import parse_entities
+from handlers.auth_handlers import Reg
+from keyboards.admin_kb import get_feedback_answer_btn
 from keyboards.main_kb import get_main_buttons, get_promos_nav, get_news_nav, get_purchase_history_nav
 from keyboards.auth_kb import phone_btn
-from db_handlers.db_users import is_user_authenticated, get_user_data
-from db_handlers.db_promotions import load_promotions
-from db_handlers.db_news import load_news
-from handlers.auth_handlers import Reg
+from database.requests import is_user_authenticated, get_user, get_active_promo_list, get_new_list, get_admin_users_list
 from api.counterparty import get_balance_counterparty
 from api.demand import get_demands_by_counterparty, get_positions_from_demand
 from api.salesreturn import get_salesreturns_by_counterparty, get_positions_from_salesreturn
 from api.objects import get_object_by_url
+from utils.formats import pretty_sum, pretty_datetime
 
 router = Router()
 
 
 @router.startup()
-async def on_startup(bot: Bot):
+async def on_startup():
     # Komandalarni menu tugamasiga chiqarish
     await bot.set_my_commands([
         BotCommand(command="start", description="Botni ishga tushurish"),
-        BotCommand(command="reg", description="Qayta ro'yxatdan o'tish"),
+        BotCommand(command="reg", description="Qayta ro'yxatdan o'tish")
     ])
 
 
@@ -45,13 +51,13 @@ Bu bot orqali siz quyidagi bo‘limlardan foydalanishingiz mumkin:
 <b>💚 Oilamizga marhamat!</b>
 """
     chat_id = message.from_user.id
-    main_kb = await get_main_buttons(chat_id)
 
-    if not await is_user_authenticated(chat_id=int(message.from_user.id)):
+    if not await is_user_authenticated(chat_id):
         phone_request_text = "📞 Iltimos, ro'yxatdan o'tish uchun telefon raqamingizni pastdagi tugmani bosgan holda yuboring:"
         await state.set_state(Reg.phone_number)
         return await message.answer(text=phone_request_text, reply_markup=phone_btn)
 
+    main_kb = await get_main_buttons(chat_id)
     return await message.answer(text=greeting_text, reply_markup=main_kb)
 
 
@@ -97,54 +103,78 @@ Kompaniyamiz quyidagi yo‘nalishlarda faoliyat yuritadi:
 @router.message(F.text == "💳 Mening balansim")
 async def cmd_counterparty_balance(message: Message, state: FSMContext):
     await state.clear()
-    user = await get_user_data(chat_id=message.from_user.id)
-    counterparty = await get_balance_counterparty(counterparty_id=str(user.get("counterparty_id")))
+    chat_id = message.from_user.id
+    main_kb = await get_main_buttons(chat_id)
+    user = await get_user(chat_id)
+    counterparty = await get_balance_counterparty(counterparty_id=user.api_id)
     balance_text = f"""
 💳 <b>Mening balansim</b>
 
-🧑‍💼 <b>F.I.Sh:</b> {user.get("full_name")}
-📞 <b>Telefon:</b> {user.get("phone_number")}
+🧑‍💼 <b>F.I.Sh:</b> {user.full_name}
+📞 <b>Telefon:</b> {user.phone_number}
 
-💰 <b>Joriy balans:</b> {counterparty.get("balance")} so'm
-🎁 <b>Yig'ilgan bonuslar:</b> {counterparty.get("bonusBalance")} so'm
+💰 <b>Joriy balans:</b> {pretty_sum(counterparty.get("balance"))} so'm
+🎁 <b>Yig'ilgan bonuslar:</b> {pretty_sum(counterparty.get("bonusBalance"))} so'm
 
 🛍 <b>Xaridlar soni:</b> {counterparty.get("demandsCount")} ta
-💵 <b>Xaridlar summasi:</b> {counterparty.get("demandsSum")} so'm
-📆 <b>Oxirgi xarid sanasi:</b> {counterparty.get("lastDemandDate")}
+💵 <b>Xaridlar summasi:</b> {pretty_sum(counterparty.get("demandsSum"))} so'm
+📆 <b>Oxirgi xarid sanasi:</b> {pretty_datetime(counterparty.get("lastDemandDate"))}
 
-🎯 <b>Skidkalar summasi:</b> {counterparty.get("discountsSum")} so'm
+🎯 <b>Skidkalar summasi:</b> {pretty_sum(counterparty.get("discountsSum"))} so'm
 
 ↩️ <b>Vozvratlar soni:</b> {counterparty.get("returnsCount")} ta
-💸 <b>Vozvratlar summasi:</b> {counterparty.get("returnsSum")} so'm
+💸 <b>Vozvratlar summasi:</b> {pretty_sum(counterparty.get("returnsSum"))} so'm
 
 ❗️Agar balansingizda xatolik bo‘lsa, operator bilan bog‘laning: @admin_username
 """
-    chat_id = str(message.from_user.id)
-    main_kb = await get_main_buttons(chat_id)
     await message.answer(text=balance_text, reply_markup=main_kb)
 
 
 # Aksiyalar bo'limi
 async def send_promo_page(message: Message, index: int):
-    promos = await load_promotions()
-    total = len(promos)
-    if total == 0:
-        return await message.answer("❌ Hozircha faol aksiyalar mavjud emas.")
+    promos = await get_active_promo_list()
+
+    if promos is None:
+        return await message.answer("❌ Hozircha aksiyalar mavjud emas.")
 
     if not isinstance(index, int):
         return await message.answer("⚠️ Noto‘g‘ri sahifa indeksi.")
+
+    total = len(promos)
 
     if index < 0 or index >= total:
         return await message.answer("⚠️ Bunday aksiya sahifasi mavjud emas.")
 
     promo = promos[index]
-    kb = get_promos_nav(index=index, total=total)
-    text = f"""
-<b>{promo["title"]}</b>
+    kb = await get_promos_nav(index=index, total=total)
+    # Parse entities
+    entities = await parse_entities(promo.caption_entities)
+    promo_page = None
 
-{promo["description"]}
-"""
-    return await message.answer_photo(photo=FSInputFile(promo["image"]), caption=text, reply_markup=kb)
+    if promo.content_type == "text":
+        promo_page = await message.answer(
+            text=promo.caption,
+            entities=entities,
+            reply_markup=kb,
+            parse_mode=None
+        )
+    elif promo.content_type == "photo":
+        promo_page = await message.answer_photo(
+            photo=promo.file_id,
+            caption=promo.caption,
+            caption_entities=entities,
+            reply_markup=kb,
+            parse_mode=None
+        )
+    elif promo.content_type == "video":
+        promo_page = await message.answer_video(
+            video=promo.file_id,
+            caption=promo.caption,
+            caption_entities=entities,
+            reply_markup=kb,
+            parse_mode=None
+        )
+    return promo_page
 
 
 @router.message(F.text == "🎁 Aksiyalar")
@@ -167,25 +197,49 @@ async def navigate_posts(callback_query: CallbackQuery):
 
 # Yangiliklar bo'limi
 async def send_new_page(message: Message, index: int):
-    news = load_news()
-    total = len(news)
-    if total == 0:
+    news = await get_new_list()
+
+    if news is None:
         return await message.answer("❌ Hozircha yangiliklar mavjud emas.")
 
     if not isinstance(index, int):
         return await message.answer("⚠️ Noto‘g‘ri sahifa indeksi.")
 
+    total = len(news)
+
     if index < 0 or index >= total:
         return await message.answer("⚠️ Bunday yangilik sahifasi mavjud emas.")
 
     new = news[index]
-    kb = get_news_nav(index=index, total=total)
-    text = f"""
-<b>{new["title"]}</b>
+    kb = await get_news_nav(index=index, total=total)
+    # Parse entities
+    entities = await parse_entities(new.caption_entities)
+    new_page = None
 
-{new["description"]}
-"""
-    return await message.answer_photo(photo=FSInputFile(new["image"]), caption=text, reply_markup=kb)
+    if new.content_type == "text":
+        new_page = await message.answer(
+            text=new.caption,
+            entities=entities,
+            reply_markup=kb,
+            parse_mode=None
+        )
+    elif new.content_type == "photo":
+        new_page = await message.answer_photo(
+            photo=new.file_id,
+            caption=new.caption,
+            caption_entities=entities,
+            reply_markup=kb,
+            parse_mode=None
+        )
+    elif new.content_type == "video":
+        new_page = await message.answer_video(
+            video=new.file_id,
+            caption=new.caption,
+            caption_entities=entities,
+            reply_markup=kb,
+            parse_mode=None
+        )
+    return new_page
 
 
 @router.message(F.text == "📰 Yangiliklar")
@@ -212,12 +266,13 @@ async def get_sorted_history_data(message: Message):
     Xaridlar tarixini vaqti bo'yicha sortirovkalash
 
     """
-    user = await get_user_data(message.from_user.id)
+    user = await get_user(message.from_user.id)
     if not user:
-        return await message.answer(text="Iltimos ro'yxatdan o'tganingizga ishonch hosil qiling")
+        await message.answer(text="🔒 Iltimos, ro'yxatdan o'tganingizga ishonch hosil qiling!")
+        return None
 
-    demands = await get_demands_by_counterparty(user["counterparty_id"])
-    sales_returns = await get_salesreturns_by_counterparty(user["counterparty_id"])
+    demands = await get_demands_by_counterparty(user.api_id)
+    sales_returns = await get_salesreturns_by_counterparty(user.api_id)
     history_data = []
 
     if demands:
@@ -234,21 +289,18 @@ async def get_sorted_history_data(message: Message):
 async def send_purchase_history_page(message: Message, sorted_data: list, index: int):
     wait_msg = await message.answer("⏳ Iltimos, kuting...")
     total = len(sorted_data)
-    kb = get_purchase_history_nav(index=index, total=total)
 
     if total == 0:
-        await wait_msg.delete()
-        return await message.answer("❌ Sizda hozircha xaridlar tarixi mavjud emas.")
+        return await wait_msg.edit_text("❌ Sizda hozircha xaridlar tarixi mavjud emas.")
 
     if not isinstance(index, int):
-        await wait_msg.delete()
-        return await message.answer("⚠️ Noto‘g‘ri sahifa indeksi.")
+        return await wait_msg.edit_text("⚠️ Noto‘g‘ri sahifa indeksi.")
 
     if index < 0 or index >= total:
-        await wait_msg.delete()
-        return await message.answer("⚠️ Bunday sahifasi mavjud emas.")
+        return await wait_msg.edit_text("⚠️ Bunday sahifasi mavjud emas.")
 
     data = sorted_data[index]
+    kb = await get_purchase_history_nav(index=index, total=total)
     positions = []
     doc_type = ""
 
@@ -269,7 +321,6 @@ async def send_purchase_history_page(message: Message, sorted_data: list, index:
 
     if positions:
         for position in positions:
-
             # Mahsulot ma'lumotlarini olish
             product_url = position["assortment"]["meta"]["href"]
             product = await get_object_by_url(product_url)
@@ -278,25 +329,23 @@ async def send_purchase_history_page(message: Message, sorted_data: list, index:
             uomname_url = product["uom"]["meta"]["href"]
             uomname = await get_object_by_url(uomname_url)
 
-            strpositions += f"📌 {product_order}.<b>{product['name']}</b>\n\t\t 🔢 Miqdori: {position['quantity']} {uomname['name']}\n\t\t 💰 Narxi: {position['price']} {currency['name']}\n"
+            strpositions += f"📌 {product_order}.{product['name']}\n\t\t 🔢 Miqdori: {position['quantity']} <i>{uomname['name']}</i>\n\t\t 💰 Narxi: {pretty_sum(position['price'])} <i>{currency['name']}</i>\n"
             product_order += 1
 
             # Skidka borligini tekshirish
             if not position['discount'] == 0:
-                strpositions += f"\t\t 🎁 Skidka: {position['discount']}\n\n"
+                strpositions += f"\t\t 🎁 Skidka: {pretty_sum(position['discount'])} <i>{currency['name']}</i>\n\n"
             else:
                 strpositions += "\n"
 
     history_text = f"""
-📃 <b>{doc_type} №{data["name"]}</b>
-🕒 <i>{data["moment"]}</i>
+📃 <b>{doc_type}</b> № {data["name"]}
+🕒 <i>{pretty_datetime(data["moment"])}</i>
 
 📦 <b>Tovarlar ro'yxati:</b>
-{strpositions}
-💵 <b>{doc_type}lar summasi:</b> {data["sum"]} {currency["name"]}
+{strpositions}💵 <b>{doc_type}lar summasi:</b> {pretty_sum(data["sum"])} <i>{currency["name"]}</i>
     """
-    await wait_msg.delete()
-    return await message.answer(text=history_text, reply_markup=kb)
+    return await wait_msg.edit_text(text=history_text, reply_markup=kb)
 
 
 @router.message(F.text == "🧾 Xaridlar tarixi")
@@ -326,6 +375,11 @@ async def navigate_purchase_history(callback_query: CallbackQuery, state: FSMCon
 
 
 # Taklif va shikoyatlar bo'limi
+class FeedbackStates(StatesGroup):
+    AwaitFeedback = State()
+    AnswerFeedback = State()
+
+
 @router.message(F.text == "✍️ Taklif va shikoyatlar")
 async def show_feedback(message: Message, state: FSMContext):
     await state.clear()
@@ -337,25 +391,77 @@ Sizning fikringiz biz uchun juda muhim!\n
 Iltimos, o‘zingizni qiziqtirgan masala, taklif yoki shikoyatingizni shu yerga yozib qoldiring.\n\n
 📌 Biz barcha xabarlarni diqqat bilan ko‘rib chiqamiz va imkon qadar tez orada javob beramiz.  
 """
+    await state.set_state(FeedbackStates.AwaitFeedback)
     await message.answer(text=feedback_txt, reply_markup=main_kb)
 
 
-@router.message(Command("spoiler"))
-async def send_spoiler(message: Message):
-    text = "Bu yerda sirli matn bor!"
+@router.message(FeedbackStates.AwaitFeedback)
+async def send_feedback_to_admins(message: Message, state: FSMContext):
+    admins = await get_admin_users_list()
+    feedback_text = message.text
+    feedback_entities = message.entities
+    user = await get_user(message.from_user.id)
+    kb = await get_feedback_answer_btn(message_id=message.message_id, chat_id=message.from_user.id)
 
-    # Spoilerni qayerda boshlash va uzunligi
-    spoiler_offset = 13  # "sirli matn" boshi
-    spoiler_length = 10  # "sirli matn" uzunligi
+    if not user:
+        await message.answer(text="🔒 Iltimos, ro'yxatdan o'tganingizga ishonch hosil qiling!")
+        return None
 
-    entity = MessageEntity(
-        type="spoiler",
-        offset=spoiler_offset,
-        length=spoiler_length
-    )
+    if not message.text:
+        return await message.answer("🔔 Iltimos, faqat matn shaklidagi ma'lumot yuboring!")
 
-    await message.answer(
-        text=text,
-        entities=[entity]
-    )
+    feedback = f"""
+<b>📩 Yangi taklif yoki shikoyat</b>
+
+<b>📝 Xabar:</b>
+{feedback_text}
+
+<b>👤 Foydalanuvchi:</b> @{message.from_user.username or "Username yo'q"}
+<b>📞 Telefon raqam:</b> {user.phone_number}
+"""
+
+    for admin in admins:
+        try:
+            await bot.send_message(chat_id=admin.tg_id, text=feedback, entities=feedback_entities, reply_markup=kb)
+            await asyncio.sleep(0.05)  # Antiflood uchun kichik pauza (50ms)
+        except Exception as e:
+            print(f"Xatolik {admin.tg_id} ga yuborishda: {e}")
+
+    await state.clear()
+    await message.answer("✅ Taklifingiz/shikoyatingiz adminga yuborildi. Rahmat!",
+                         reply_markup=await get_main_buttons(message.from_user.id))
+
+
+@router.callback_query(lambda c: c.data.startswith("feedbackAnswer_"))
+async def feedback_answer(callback_query: CallbackQuery, state: FSMContext):
+    action, chat_id, message_id = callback_query.data.split("_")
+
+    # Chat ID va Message ID ni int ga aylantirib olamiz!
+    await state.set_state(FeedbackStates.AnswerFeedback)
+    await state.update_data(chat_id=int(chat_id), message_id=int(message_id))
+
+    await callback_query.answer()
+    await callback_query.message.answer("✏️ Foydalanuvchiga javob yozing:")
+
+
+@router.message(FeedbackStates.AnswerFeedback)
+async def send_feedback_answer_to_user(message: Message, state: FSMContext):
+    data = await state.get_data()
+    chat_id = data.get("chat_id")
+    message_id = data.get("message_id")
+
+    if chat_id and message_id:
+        try:
+            await message.bot.send_message(
+                chat_id=chat_id,
+                text=message.text,
+                reply_to_message_id=message_id
+            )
+            await message.answer("✅ Javob yuborildi.")
+        except TelegramBadRequest:
+            await message.answer("⚠️ Foydalanuvchining chatini topib bo‘lmadi. Ehtimol, u botni bloklagan.")
+    else:
+        await message.answer("⚠️ Xabar yuborish uchun ma'lumotlar yetishmayapti.")
+
+    await state.clear()
 

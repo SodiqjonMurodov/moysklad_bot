@@ -1,25 +1,16 @@
-import os, asyncio, logging
-from dotenv import load_dotenv
+import asyncio
+import logging
 
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
+from aiogram import Dispatcher
+from core.bot import bot
 from handlers import auth_handlers, main_handlers, admin_handlers
 from database.models import async_main
 
-load_dotenv()
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-
 
 async def main():
+    # Connection to db
     await async_main()
 
-    bot = Bot(
-        token=BOT_TOKEN,
-        default=DefaultBotProperties(
-            parse_mode=ParseMode.HTML
-        )
-    )
     dp = Dispatcher()
 
     # Routers

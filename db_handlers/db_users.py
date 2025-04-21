@@ -22,7 +22,7 @@ async def save_users(data: dict):
         await f.write(json.dumps(data, indent=4))
 
 
-async def is_user_authenticated(chat_id: int) -> bool:
+async def is_user_authenticated(chat_id) -> bool:
     users = await load_users()
     return str(chat_id) in users.keys()
 

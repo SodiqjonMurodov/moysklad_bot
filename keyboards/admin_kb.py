@@ -1,7 +1,6 @@
 from aiogram.utils.keyboard import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
-from sqlalchemy.util import await_only
+from database.requests import get_promo_list, get_new_list
 
-from database.requests import get_promo_list
 
 async def get_admin_panel_buttons() -> ReplyKeyboardMarkup:
     buttons = [
@@ -43,9 +42,44 @@ async def get_admin_promos_nav(index: int, total: int):
             InlineKeyboardButton(text="⛔️ O'chirish", callback_data=f"promoDelete_{promo.id}")
         ],
         [
-            InlineKeyboardButton(text="🚀 Foydalanuvchilarga tarqatish", callback_data="promoShare")
+            InlineKeyboardButton(text="🚀 Foydalanuvchilarga tarqatish", callback_data=f"promoShare_{promo.id}")
         ]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
+
+async def get_admin_news_nav(index: int, total: int):
+    nav_buttons = []
+    news = await get_new_list()
+    new = news[index]
+    if index > 0:
+        nav_buttons.append(InlineKeyboardButton(text="⬅️ Oldingi", callback_data=f"prevAdminNew_{index - 1}_{total}"))
+    if index < total - 1:
+        nav_buttons.append(InlineKeyboardButton(text="Keyingi ➡️", callback_data=f"nextAdminNew_{index + 1}_{total}"))
+
+    # Aktivlik tugamsini aniqlash
+    if new.is_active:
+        activity_btn = [InlineKeyboardButton(text="❎ Deaktivlashtirish", callback_data=f"newDeactivate_{index}_{new.id}")]
+    else:
+        activity_btn = [InlineKeyboardButton(text="✅ Aktivlashtirish", callback_data=f"newActivate_{index}_{new.id}")]
+
+    buttons = [
+        nav_buttons,
+        activity_btn,
+        [
+            InlineKeyboardButton(text="✏️ Tahrirlash", callback_data=f"newEdit_{new.id}"),
+            InlineKeyboardButton(text="⛔️ O'chirish", callback_data=f"newDelete_{new.id}")
+        ],
+        [
+            InlineKeyboardButton(text="🚀 Foydalanuvchilarga tarqatish", callback_data=f"newShare_{new.id}")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+async def get_feedback_answer_btn(chat_id, message_id):
+    button = [
+        [InlineKeyboardButton(text=" Javob yozish", callback_data=f"feedbackAnswer_{chat_id}_{message_id}")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=button)
 
