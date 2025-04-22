@@ -1,5 +1,5 @@
 from aiogram.utils.keyboard import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
-from database.requests import get_user
+from app.database.requests import get_user
 
 
 async def get_main_buttons(chat_id) -> ReplyKeyboardMarkup:

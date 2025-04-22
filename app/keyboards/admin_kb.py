@@ -1,5 +1,5 @@
 from aiogram.utils.keyboard import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
-from database.requests import get_promo_list, get_new_list
+from app.database.requests import get_promo_list, get_new_list
 
 
 async def get_admin_panel_buttons() -> ReplyKeyboardMarkup:

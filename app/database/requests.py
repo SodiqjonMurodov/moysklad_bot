@@ -1,7 +1,6 @@
-from database.models import async_session
-from database.models import User, Promotion, New
+from app.database.models import async_session
+from app.database.models import User, Promotion, New
 from sqlalchemy import select, desc
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 # Users section

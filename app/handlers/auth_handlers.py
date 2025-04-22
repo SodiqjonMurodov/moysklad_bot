@@ -4,11 +4,11 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
-from keyboards.auth_kb import phone_btn
-from keyboards.main_kb import get_main_buttons
+from app.keyboards.auth_kb import phone_btn
+from app.keyboards.main_kb import get_main_buttons
 from api.counterparty import create_counterparty, add_counterparty_to_group, check_counterparty_by_phone
-from database.requests import is_user_authenticated, create_user
-from database.models import User
+from app.database.requests import is_user_authenticated, create_user
+from app.database.models import User
 
 router = Router()
 

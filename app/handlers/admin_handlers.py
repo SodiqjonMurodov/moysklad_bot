@@ -5,12 +5,12 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, MessageEntity
 from aiogram.fsm.context import FSMContext
 
-from keyboards.admin_kb import get_admin_panel_buttons, get_admin_promos_nav, get_admin_news_nav
-from keyboards.main_kb import get_main_buttons
-from database.models import Promotion, New
-from database.requests import (set_promo, get_promo_list, set_promo_activation, update_promo, delete_promo, get_promo,
-                               get_user, get_users_list, set_new, get_new_list, set_new_activation, update_new,
-                               delete_new, get_new)
+from app.keyboards.admin_kb import get_admin_panel_buttons, get_admin_promos_nav, get_admin_news_nav
+from app.keyboards.main_kb import get_main_buttons
+from app.database.models import Promotion, New
+from app.database.requests import (set_promo, get_promo_list, set_promo_activation, update_promo, delete_promo, get_promo,
+                                   get_users_list, set_new, get_new_list, set_new_activation, update_new,
+                                   delete_new, get_new)
 
 router = Router()
 

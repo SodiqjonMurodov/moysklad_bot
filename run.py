@@ -1,10 +1,11 @@
 import asyncio
 import logging
+import sys
 
 from aiogram import Dispatcher
-from core.bot import bot
-from handlers import auth_handlers, main_handlers, admin_handlers
-from database.models import async_main
+from app.core.bot import bot
+from app.handlers import main_handlers, admin_handlers, auth_handlers
+from app.database.models import async_main
 
 
 async def main():
@@ -23,7 +24,13 @@ async def main():
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)  # logging
+    logging.basicConfig(level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler("bot.log"),
+            logging.StreamHandler(sys.stdout)
+        ]
+                        )  # logging
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

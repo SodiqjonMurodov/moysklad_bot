@@ -8,18 +8,18 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.exceptions import TelegramBadRequest
 
-from core.bot import bot
-from handlers.admin_handlers import parse_entities
-from handlers.auth_handlers import Reg
-from keyboards.admin_kb import get_feedback_answer_btn
-from keyboards.main_kb import get_main_buttons, get_promos_nav, get_news_nav, get_purchase_history_nav
-from keyboards.auth_kb import phone_btn
-from database.requests import is_user_authenticated, get_user, get_active_promo_list, get_new_list, get_admin_users_list
+from app.core.bot import bot
+from app.handlers.admin_handlers import parse_entities
+from app.handlers.auth_handlers import Reg
+from app.keyboards.admin_kb import get_feedback_answer_btn
+from app.keyboards.main_kb import get_main_buttons, get_promos_nav, get_news_nav, get_purchase_history_nav
+from app.keyboards.auth_kb import phone_btn
+from app.database.requests import is_user_authenticated, get_user, get_active_promo_list, get_new_list, get_admin_users_list
 from api.counterparty import get_balance_counterparty
 from api.demand import get_demands_by_counterparty, get_positions_from_demand
 from api.salesreturn import get_salesreturns_by_counterparty, get_positions_from_salesreturn
 from api.objects import get_object_by_url
-from utils.formats import pretty_sum, pretty_datetime
+from app.utils.formats import pretty_sum, pretty_datetime
 
 router = Router()
 
@@ -326,10 +326,14 @@ async def send_purchase_history_page(message: Message, sorted_data: list, index:
             product = await get_object_by_url(product_url)
 
             # O'lchov birligini olish
-            uomname_url = product["uom"]["meta"]["href"]
-            uomname = await get_object_by_url(uomname_url)
+            try:
+                uomname_url = product["uom"]["meta"]["href"]
+                uomname = await get_object_by_url(uomname_url)
+                uomname = uomname['name']
+            except:
+                uomname = ""
 
-            strpositions += f"📌 {product_order}.{product['name']}\n\t\t 🔢 Miqdori: {position['quantity']} <i>{uomname['name']}</i>\n\t\t 💰 Narxi: {pretty_sum(position['price'])} <i>{currency['name']}</i>\n"
+            strpositions += f"📌 {product_order}.{product['name']}\n\t\t 🔢 Miqdori: {position['quantity']} <i>{uomname}</i>\n\t\t 💰 Narxi: {pretty_sum(position['price'])} <i>{currency['name']}</i>\n"
             product_order += 1
 
             # Skidka borligini tekshirish

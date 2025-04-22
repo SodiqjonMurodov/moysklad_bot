@@ -3,14 +3,14 @@
 .idea
 db.sqlite3
 test.py
+bot.log
 
 __pycache__
 api/__pycache__
-db_handlers/__pycache__
-handlers/__pycache__
-keyboards/__pycache__
-middlewares/__pycache__
-storage/__pycache__
-utils/__pycache__
-database/__pycache__
+app/__pycache__
+app/core/__pycache__
+app/database/__pycache__
+app/handlers/__pycache__
+app/keyboards/__pycache__
+app/utils/__pycache__
 
