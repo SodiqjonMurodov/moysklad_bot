@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.exceptions import TelegramBadRequest
 
-from app.core.bot import bot
+from app.core.bot import bot, DEMAND_TEMP_ID, SALESRETURN_TEMP_ID
 from app.handlers.admin_handlers import parse_entities
 from app.handlers.auth_handlers import Reg
 from app.keyboards.admin_kb import get_feedback_answer_btn
@@ -18,7 +18,7 @@ from app.database.requests import is_user_authenticated, get_user, get_active_pr
 from api.counterparty import get_balance_counterparty
 from api.demand import get_demands_by_counterparty, get_positions_from_demand
 from api.salesreturn import get_salesreturns_by_counterparty, get_positions_from_salesreturn
-from api.objects import get_object_by_url
+from api.entities import get_object_by_url, publish_document_with_template
 from app.utils.formats import pretty_sum, pretty_datetime
 
 router = Router()
@@ -34,22 +34,10 @@ async def on_startup():
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, state: FSMContext):
+async def cmd_start(message: Message, state: FSMContext, i18n):
+    _ = i18n
     await state.clear()
-    greeting_text = """
-<b>👋 Assalomu alaykum va Telegram botimizga xush kelibsiz!</b>
-
-Bu bot orqali siz quyidagi bo‘limlardan foydalanishingiz mumkin:
-
-ℹ️ <b>Biz haqimizda</b> — kompaniyamiz faoliyati haqida qisqacha ma’lumot  
-💳 <b>Mening balansim</b> — hisobingizdagi bonuslar va qoldiqni ko‘rish  
-🎁 <b>Aksiyalar</b> — hozirgi chegirmalar va maxsus takliflar  
-🧾 <b>Xaridlar tarixi</b> — amalga oshirgan xaridlaringiz ro‘yxati  
-📰 <b>Yangiliklar</b> — eng so‘nggi yangiliklar va e’lonlar  
-✍️ <b>Taklif va shikoyatlar</b> — bizga fikr va takliflaringizni yuboring
-
-<b>💚 Oilamizga marhamat!</b>
-"""
+    greeting_text = _("welcome")
     chat_id = message.from_user.id
 
     if not await is_user_authenticated(chat_id):
@@ -113,17 +101,17 @@ async def cmd_counterparty_balance(message: Message, state: FSMContext):
 🧑‍💼 <b>F.I.Sh:</b> {user.full_name}
 📞 <b>Telefon:</b> {user.phone_number}
 
-💰 <b>Joriy balans:</b> {pretty_sum(counterparty.get("balance"))} so'm
-🎁 <b>Yig'ilgan bonuslar:</b> {pretty_sum(counterparty.get("bonusBalance"))} so'm
+💰 <b>Joriy balans:</b> {pretty_sum(amount=counterparty.get("balance"))} so'm
+🎁 <b>Yig'ilgan bonuslar:</b> {pretty_sum(amount=counterparty.get("bonusBalance"))} so'm
 
 🛍 <b>Xaridlar soni:</b> {counterparty.get("demandsCount")} ta
-💵 <b>Xaridlar summasi:</b> {pretty_sum(counterparty.get("demandsSum"))} so'm
+💵 <b>Xaridlar summasi:</b> {pretty_sum(amount=counterparty.get("demandsSum"))} so'm
 📆 <b>Oxirgi xarid sanasi:</b> {pretty_datetime(counterparty.get("lastDemandDate"))}
 
-🎯 <b>Skidkalar summasi:</b> {pretty_sum(counterparty.get("discountsSum"))} so'm
+🎯 <b>Skidkalar summasi:</b> {pretty_sum(amount=counterparty.get("discountsSum"))} so'm
 
 ↩️ <b>Vozvratlar soni:</b> {counterparty.get("returnsCount")} ta
-💸 <b>Vozvratlar summasi:</b> {pretty_sum(counterparty.get("returnsSum"))} so'm
+💸 <b>Vozvratlar summasi:</b> {pretty_sum(amount=counterparty.get("returnsSum"))} so'm
 
 ❗️Agar balansingizda xatolik bo‘lsa, operator bilan bog‘laning: @admin_username
 """
@@ -303,14 +291,28 @@ async def send_purchase_history_page(message: Message, sorted_data: list, index:
     kb = await get_purchase_history_nav(index=index, total=total)
     positions = []
     doc_type = ""
+    publication = {
+        "href": "N/B"
+    }
 
     # Dokument turini aniqlash
     if "salesreturn" in data["meta"]["href"]:
         doc_type = "Vozvrat"
         positions = await get_positions_from_salesreturn(data["id"])
+        publication = await publish_document_with_template(
+            doc_type="salesreturn",
+            doc_id=data["id"],
+            template_id=SALESRETURN_TEMP_ID
+        )
+
     elif "demand" in data["meta"]["href"]:
         doc_type = "Xarid"
         positions = await get_positions_from_demand(data["id"])
+        publication = await publish_document_with_template(
+            doc_type="demand",
+            doc_id=data["id"],
+            template_id=DEMAND_TEMP_ID
+        )
 
     strpositions = "" # Dokumentdagi tovarlar ro'yxati
     product_order = 1 # Tovarlarni tartib raqami
@@ -338,16 +340,18 @@ async def send_purchase_history_page(message: Message, sorted_data: list, index:
 
             # Skidka borligini tekshirish
             if not position['discount'] == 0:
-                strpositions += f"\t\t 🎁 Skidka: {pretty_sum(position['discount'])} <i>{currency['name']}</i>\n\n"
+                position_sum = position['price'] * position['quantity'] * (1 - position['discount'] / 100)
+                strpositions += f"\t\t 🎁 Skidka: {position['discount']} %\n\t\t 💵 Summa: {pretty_sum(position_sum)} <i>{currency['name']}</i>\n\n"
             else:
-                strpositions += "\n"
+                strpositions += f"\t\t 💵 Summa: {pretty_sum(position['price'] * position['quantity'])} <i>{currency['name']}</i>\n\n"
 
     history_text = f"""
 📃 <b>{doc_type}</b> № {data["name"]}
 🕒 <i>{pretty_datetime(data["moment"])}</i>
 
 📦 <b>Tovarlar ro'yxati:</b>
-{strpositions}💵 <b>{doc_type}lar summasi:</b> {pretty_sum(data["sum"])} <i>{currency["name"]}</i>
+{strpositions} 🧾 <b>{doc_type} summasi:</b> {pretty_sum(data["sum"])} <i>{currency["name"]}</i>
+🔗 <b>Elektron chek:</b> {publication['href']}
     """
     return await wait_msg.edit_text(text=history_text, reply_markup=kb)
 

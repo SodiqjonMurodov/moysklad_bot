@@ -7,6 +7,8 @@ from aiogram.enums import ParseMode
 
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+DEMAND_TEMP_ID = os.getenv("DEMAND_TEMP_ID")
+SALESRETURN_TEMP_ID = os.getenv("SALESRETURN_TEMP_ID")
 
 bot = Bot(
     token=BOT_TOKEN,

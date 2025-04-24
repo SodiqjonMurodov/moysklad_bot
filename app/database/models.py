@@ -46,6 +46,12 @@ class Promotion(Base):
     caption_entities: Mapped[list] = mapped_column(JSON, nullable=True)
 
 
+# class Publication(Base):
+#     __tablename__ = 'publications'
+#
+#     pass
+
+
 async def async_main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

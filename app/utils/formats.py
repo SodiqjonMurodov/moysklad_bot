@@ -1,9 +1,10 @@
 from datetime import datetime
 
 
-def pretty_sum(amount) -> str:
+def pretty_sum(amount: float) -> str:
     if amount:
-        return f"{amount:,.1f}".replace(",", " ")
+        amount = amount / 100
+        return f"{amount:,.2f}".replace(",", " ")
     else:
         return f"0.0"
 

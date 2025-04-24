@@ -1,3 +1,5 @@
+import asyncio
+import json
 import os
 import httpx
 from dotenv import load_dotenv
@@ -43,3 +45,5 @@ async def get_positions_from_demand(doc_id):
         rows = data.get("rows", [])
         return rows
     return []
+
+

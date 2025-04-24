@@ -6,6 +6,7 @@ from aiogram import Dispatcher
 from app.core.bot import bot
 from app.handlers import main_handlers, admin_handlers, auth_handlers
 from app.database.models import async_main
+from app.middlewares.i18n import I18nMiddleware
 
 
 async def main():
@@ -13,6 +14,10 @@ async def main():
     await async_main()
 
     dp = Dispatcher()
+
+    # I18n localization
+    dp.message.middleware(I18nMiddleware())
+    dp.callback_query.middleware(I18nMiddleware())
 
     # Routers
     dp.include_routers(
