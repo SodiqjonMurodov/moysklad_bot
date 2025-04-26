@@ -1,0 +1,520 @@
+# Uzbek translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-04-26 18:20+0500\n"
+"PO-Revision-Date: 2025-04-25 17:14+0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uz\n"
+"Language-Team: uz <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: app/handlers/admin_handlers.py:29
+msgid "Welcome to Admin panel!"
+msgstr "Administrator paneliga xush kelibsiz!"
+
+#: app/handlers/admin_handlers.py:38
+msgid "Welcome to User panel!"
+msgstr "Foydalanuvchi paneliga xush kelibsiz!"
+
+#: app/handlers/admin_handlers.py:56
+msgid "❌ Aksiyalar mavjud emas."
+msgstr "❌ Aksiyalar mavjud emas."
+
+#: app/handlers/admin_handlers.py:59 app/handlers/admin_handlers.py:332
+msgid "⚠️ Noto‘g‘ri sahifa indeksi."
+msgstr "⚠️ Noto‘g‘ri sahifa indeksi."
+
+#: app/handlers/admin_handlers.py:65 app/handlers/admin_handlers.py:338
+#: app/handlers/main_handlers.py:238 app/handlers/main_handlers.py:310
+msgid "⚠️ Bunday aksiya sahifasi mavjud emas."
+msgstr "⚠️ Bunday aksiya sahifasi mavjud emas."
+
+#: app/handlers/admin_handlers.py:147
+msgid "📝 Iltimos, yangi o'zgartirilgan aksiya matnini yuboring!"
+msgstr "📝 Iltimos, yangi o‘zgartirilgan aksiya matnini yuboring!"
+
+#: app/handlers/admin_handlers.py:175 app/handlers/admin_handlers.py:449
+msgid "📄 Iltimos, faqat matn, rasm yoki video ko'rinishidagi xabar yuboring!"
+msgstr "📄 Iltimos, faqat matn, rasm yoki video ko‘rinishidagi xabar yuboring!"
+
+#: app/handlers/admin_handlers.py:199 app/handlers/admin_handlers.py:316
+msgid "✅ Aksiya saqlandi"
+msgstr "✅ Aksiya saqlandi"
+
+#: app/handlers/admin_handlers.py:213 app/handlers/admin_handlers.py:487
+msgid "✅ Xabar muvaffaqiyatli o'chirildi!"
+msgstr "✅ Xabar muvaffaqiyatli o‘chirildi!"
+
+#: app/handlers/admin_handlers.py:215 app/handlers/admin_handlers.py:489
+msgid "❌ Xabarni o'chirishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring!"
+msgstr "❌ Xabarni o‘chirishda xatolik yuz berdi. Iltimos, qayta urinib ko‘ring!"
+
+#: app/handlers/admin_handlers.py:255 app/handlers/admin_handlers.py:529
+msgid "✅ Xabar barcha foydalanuvchilarga muvaffaqiyatli yuborildi!"
+msgstr "✅ Xabar barcha foydalanuvchilarga muvaffaqiyatli yuborildi!"
+
+#: app/handlers/admin_handlers.py:268
+msgid "📝 Iltimos, yangi aksiyani yozib yuboring:"
+msgstr "📝 Iltimos, yangi aksiyani yozib yuboring:"
+
+#: app/handlers/admin_handlers.py:294 app/handlers/admin_handlers.py:568
+msgid "⚠️ Iltimos faqat matn, rasm yoki video ko'rinishidagi xabarlarni yuboring!"
+msgstr ""
+"⚠️ Iltimos, faqat matn, rasm yoki video ko‘rinishidagi xabarlarni "
+"yuboring!"
+
+#: app/handlers/admin_handlers.py:329
+msgid "❌ Yangiliklar mavjud emas."
+msgstr "❌ Yangiliklar mavjud emas."
+
+#: app/handlers/admin_handlers.py:422
+msgid "📝 Iltimos, o'zgartirilgan yangilik matnini yuboring!"
+msgstr "📝 Iltimos, o‘zgartirilgan yangilik matnini yuboring!"
+
+#: app/handlers/admin_handlers.py:473 app/handlers/admin_handlers.py:590
+msgid "✅ Yangilik saqlandi"
+msgstr "✅ Yangilik saqlandi"
+
+#: app/handlers/admin_handlers.py:542
+#, fuzzy
+msgid "📝 Iltimos yangilikni yozib yuboring:"
+msgstr "📝 Iltimos, yangilikni yozib yuboring:"
+
+#: app/handlers/auth_handlers.py:26
+msgid "📞 Iltimos, telefon raqamingizni pastdagi tugmani bosgan holda yuboring:"
+msgstr "📞 Iltimos, telefon raqamingizni pastdagi tugma orqali yuboring:"
+
+#: app/handlers/auth_handlers.py:58 app/handlers/auth_handlers.py:86
+msgid "🎉 Siz ro'yxatdan muvaffaqiyatli o'tdingiz."
+msgstr "🎉 Siz ro‘yxatdan muvaffaqiyatli o‘tdingiz."
+
+#: app/handlers/auth_handlers.py:62
+msgid "👤 Endi to'liq ism va familiyangizni kiriting:"
+msgstr "👤 Endi to‘liq ism va familiyangizni kiriting:"
+
+#: app/handlers/auth_handlers.py:76
+msgid "❌ Ro'yxatdan o'tishda xatolik yuz berdi, iltimos qayta urinib ko'ring!"
+msgstr "❌ Ro‘yxatdan o‘tishda xatolik yuz berdi, iltimos qayta urinib ko‘ring!"
+
+#: app/handlers/main_handlers.py:41
+msgid "Botni ishga tushurish"
+msgstr "Botni ishga tushurish"
+
+#: app/handlers/main_handlers.py:42
+msgid "Qayta ro'yxatdan o'tish"
+msgstr "Qayta ro'yxatdan o'tish"
+
+#: app/handlers/main_handlers.py:43
+msgid "Tilni o'zgartirish"
+msgstr ""
+
+#: app/handlers/main_handlers.py:54 app/handlers/main_handlers.py:128
+msgid ""
+"👋 Assalomu alaykum va Telegram botimizga xush kelibsiz!\n"
+"\n"
+"Bu bot orqali siz quyidagi bo'limlardan foydalanishingiz mumkin:\n"
+"\n"
+"ℹ️ Biz haqimizda — kompaniyamiz faoliyati haqida qisqacha ma'lumot\n"
+"💳 Mening balansim — hisobingizdagi bonuslar va qoldiqni ko'rish\n"
+"🎁 Aksiyalar — hozirgi chegirmalar va maxsus takliflar\n"
+"🧾 Xaridlar tarixi — amalga oshirgan xaridlaringiz ro'yxati\n"
+"📰 Yangiliklar — eng so'nggi yangiliklar va e'lonlar\n"
+"✍️ Taklif va shikoyatlar — bizga fikr va takliflaringizni yuboring\n"
+"\n"
+"💚 Oilamizga marhamat!\n"
+msgstr ""
+"👋 Assalomu alaykum va Telegram botimizga xush kelibsiz!\n"
+"\n"
+"Bu bot orqali siz quyidagi bo‘limlardan foydalanishingiz mumkin:\n"
+"\n"
+"ℹ️ Biz haqimizda — kompaniyamiz faoliyati haqida qisqacha ma’lumot\n"
+"💳 Mening balansim — hisobingizdagi bonuslar va qoldiqni ko‘rish\n"
+"🎁 Aksiyalar — hozirgi chegirmalar va maxsus takliflar\n"
+"🧾 Xaridlar tarixi — amalga oshirgan xaridlaringiz ro‘yxati\n"
+"📰 Yangiliklar — eng so‘nggi yangiliklar va e’lonlar\n"
+"✍️ Taklif va shikoyatlar — bizga fikr va takliflaringizni yuboring\n"
+"\n"
+"💚 Oilamizga marhamat!"
+
+#: app/handlers/main_handlers.py:72
+msgid ""
+"📞 Iltimos, ro'yxatdan o'tish uchun telefon raqamingizni pastdagi tugmani "
+"bosgan holda yuboring:"
+msgstr ""
+"📞 Iltimos, ro‘yxatdan o‘tish uchun telefon raqamingizni pastdagi tugma "
+"orqali yuboring:"
+
+#: app/handlers/main_handlers.py:84
+msgid "🌐 Tilni o'zgartirish uchun quyidagi tugmalardan birini tanlang:"
+msgstr "🌐 Tilni o'zgartirish uchun quyidagi tugmalardan birini tanlang:"
+
+#: app/handlers/main_handlers.py:107
+#, fuzzy
+msgid "❌ Tanlangan til mavjud emas."
+msgstr "❌ Yangiliklar mavjud emas."
+
+#: app/handlers/main_handlers.py:114
+#, fuzzy
+msgid "✅ Til muvaffaqiyatli o'zgartirildi."
+msgstr "✅ Til muvaffaqiyatli o'zgartirildi."
+
+#: app/handlers/main_handlers.py:155
+#, fuzzy
+msgid ""
+"\n"
+"<b>ℹ️ Biz haqimizda</b>\n"
+"\n"
+"Biz — <b>[Sizning kompaniya nomi]</b>, mijozlarimizga yuqori sifatli "
+"xizmat va mahsulotlar taqdim etishga intiladigan jamoamiz. \n"
+"\n"
+"Kompaniyamiz quyidagi yo'nalishlarda faoliyat yuritadi:\n"
+"    ✅ Sifatli mahsulotlar savdosi  \n"
+"    ✅ Mijozlarga sodiqlik tizimi (bonus va chegirmalar)  \n"
+"    ✅ Onlayn xizmatlar orqali tezkor va qulay xizmat ko'rsatish  \n"
+"\n"
+"<b>🎯 Bizning maqsadimiz:</b>  \n"
+"    Har bir mijozga qulaylik yaratish va ishonchli xizmat ko'rsatish "
+"orqali uzoq muddatli hamkorlikka erishish.\n"
+"\n"
+"<b>💡 Biz nimasi bilan ajralib turamiz?</b>  \n"
+"    • Sifatli xizmat  \n"
+"    • Tezkor aloqa  \n"
+"    • Hamyonbop narxlar  \n"
+"    • Mijozlarga individual yondashuv  \n"
+"\n"
+"<b>📞 Biz bilan bog'lanish:</b>  \n"
+"    📱 Telefon: +998 78 113 78 90  \n"
+"    ✉️ Email: ferrosoft@mail.ru\n"
+"    📍 Manzil: Buxoro shahri, 5-mikrorayon, A.Jomiy ko'chasi 215 \n"
+"    🌐 Veb-sayt: www.ferrosoft.uz  \n"
+"    📱 Telegram: @ferro_soft\n"
+"\n"
+"<b>💚 Sizga xizmat ko'rsatishdan mamnunmiz!</b>\n"
+msgstr ""
+"<b>ℹ️ Biz haqimizda</b>\n"
+"\n"
+"Biz — <b>[Sizning kompaniya nomi]</b>, mijozlarimizga yuqori sifatli "
+"xizmat va mahsulotlar taqdim etishga intiladigan jamoamiz. \n"
+"\n"
+"Kompaniyamiz quyidagi yo'nalishlarda faoliyat yuritadi:\n"
+"    ✅ Sifatli mahsulotlar savdosi  \n"
+"    ✅ Mijozlarga sodiqlik tizimi (bonus va chegirmalar)  \n"
+"    ✅ Onlayn xizmatlar orqali tezkor va qulay xizmat ko'rsatish  \n"
+"\n"
+"<b>🎯 Bizning maqsadimiz:</b>  \n"
+"    Har bir mijozga qulaylik yaratish va ishonchli xizmat ko'rsatish "
+"orqali uzoq muddatli hamkorlikka erishish.\n"
+"\n"
+"<b>💡 Biz nimasi bilan ajralib turamiz?</b>  \n"
+"    • Sifatli xizmat  \n"
+"    • Tezkor aloqa  \n"
+"    • Hamyonbop narxlar  \n"
+"    • Mijozlarga individual yondashuv  \n"
+"\n"
+"<b>📞 Biz bilan bog'lanish:</b>  \n"
+"    📱 Telefon: +998 78 113 78 90  \n"
+"    ✉️ Email: ferrosoft@mail.ru\n"
+"    📍 Manzil: Buxoro shahri, 5-mikrorayon, A.Jomiy ko'chasi 215 \n"
+"    🌐 Veb-sayt: www.ferrosoft.uz  \n"
+"    📱 Telegram: @ferro_soft\n"
+"\n"
+"<b>💚 Sizga xizmat ko'rsatishdan mamnunmiz!</b>\n"
+
+#: app/handlers/main_handlers.py:203
+msgid "Mening balansim"
+msgstr "Mening balansim"
+
+#: app/handlers/main_handlers.py:205
+msgid "F.I.Sh:"
+msgstr "F.I.Sh:"
+
+#: app/handlers/main_handlers.py:206
+msgid "Telefon:"
+msgstr "Telefon:"
+
+#: app/handlers/main_handlers.py:208
+msgid "Joriy balans:"
+msgstr "Joriy balans:"
+
+#: app/handlers/main_handlers.py:208 app/handlers/main_handlers.py:209
+#: app/handlers/main_handlers.py:212 app/handlers/main_handlers.py:215
+#: app/handlers/main_handlers.py:218
+msgid "so'm"
+msgstr "so'm"
+
+#: app/handlers/main_handlers.py:209
+msgid "Yig'ilgan bonuslar:"
+msgstr "Yig'ilgan bonuslar:"
+
+#: app/handlers/main_handlers.py:211
+msgid "Xaridlar soni:"
+msgstr "Xaridlar soni:"
+
+#: app/handlers/main_handlers.py:212
+msgid "Xaridlar summasi:"
+msgstr "Xaridlar summasi:"
+
+#: app/handlers/main_handlers.py:213
+msgid "Oxirgi xarid sanasi:"
+msgstr "Oxirgi xarid sanasi:"
+
+#: app/handlers/main_handlers.py:215
+msgid "Skidkalar summasi:"
+msgstr "Chegirmalar summasi:"
+
+#: app/handlers/main_handlers.py:217
+msgid "Vozvratlar soni:"
+msgstr "Qaytgan mahsulotlar soni:"
+
+#: app/handlers/main_handlers.py:218
+msgid "Vozvratlar summasi:"
+msgstr "Qaytgan mahsulotlar summasi:"
+
+#: app/handlers/main_handlers.py:220
+msgid "Agar balansingizda xatolik bo'lsa, operator bilan bog'laning: @ferro_soft"
+msgstr "Agar balansingizda xatolik bo‘lsa, operator bilan bog‘laning: @ferro_soft"
+
+#: app/handlers/main_handlers.py:230
+msgid "❌ Hozircha aksiyalar mavjud emas."
+msgstr "❌ Hozircha aksiyalar mavjud emas."
+
+#: app/handlers/main_handlers.py:233 app/handlers/main_handlers.py:305
+#: app/handlers/main_handlers.py:403
+msgid "⚠️ Noto'g'ri sahifa indeksi."
+msgstr "⚠️ Noto‘g‘ri sahifa indeksi."
+
+#: app/handlers/main_handlers.py:302
+msgid "❌ Hozircha yangiliklar mavjud emas."
+msgstr "❌ Hozircha yangiliklar mavjud emas."
+
+#: app/handlers/main_handlers.py:377 app/handlers/main_handlers.py:549
+msgid "🔒 Iltimos, ro'yxatdan o'tganingizga ishonch hosil qiling!"
+msgstr "🔒 Iltimos, ro‘yxatdan o‘tganingizga ishonch hosil qiling!"
+
+#: app/handlers/main_handlers.py:396
+msgid "⏳ Iltimos, kuting..."
+msgstr "⏳ Iltimos, kuting..."
+
+#: app/handlers/main_handlers.py:400 app/handlers/main_handlers.py:504
+msgid "❌ Sizda hozircha xaridlar tarixi mavjud emas."
+msgstr "❌ Sizda hozircha xaridlar tarixi mavjud emas."
+
+#: app/handlers/main_handlers.py:406
+msgid "⚠️ Bunday sahifa indeksi mavjud emas."
+msgstr "⚠️ Bunday sahifa indeksi mavjud emas."
+
+#: app/handlers/main_handlers.py:418
+msgid "Vozvrat"
+msgstr "Vozvrat"
+
+#: app/handlers/main_handlers.py:427
+msgid "Xarid"
+msgstr "Xarid"
+
+#: app/handlers/main_handlers.py:457
+msgid "Miqdori"
+msgstr "Miqdori"
+
+#: app/handlers/main_handlers.py:457
+msgid "Narxi"
+msgstr "Narxi"
+
+#: app/handlers/main_handlers.py:463
+msgid "Skidka"
+msgstr "Chegirma"
+
+#: app/handlers/main_handlers.py:463 app/handlers/main_handlers.py:465
+msgid "Summa"
+msgstr "Summa"
+
+#: app/handlers/main_handlers.py:470
+msgid "Tovarlar ro'yxati:"
+msgstr "Tovarlar ro‘yxati:"
+
+#: app/handlers/main_handlers.py:471
+msgid "Umumiy summa:"
+msgstr "Umumiy summa:"
+
+#: app/handlers/main_handlers.py:472
+msgid "Elektron chek:"
+msgstr "Elektron chek:"
+
+#: app/handlers/main_handlers.py:527
+msgid ""
+"\n"
+"✍️ <b>Taklif va shikoyatlar bo'limi</b>\n"
+"                              \n"
+"Sizning fikringiz biz uchun juda muhim!\n"
+"Iltimos, o'zingizni qiziqtirgan masala, taklif yoki shikoyatingizni shu "
+"yerga yozib qoldiring.\n"
+"                              \n"
+"📌 Biz barcha xabarlarni diqqat bilan ko'rib chiqamiz va imkon qadar tez "
+"orada javob beramiz.  \n"
+msgstr ""
+"\n"
+"✍️ <b>Taklif va shikoyatlar bo‘limi</b>\n"
+"\n"
+"Sizning fikringiz biz uchun juda muhim!\n"
+"Iltimos, sizni qiziqtirgan masala, taklif yoki shikoyatingizni shu yerda "
+"yozib qoldiring.\n"
+"\n"
+"📌 Biz barcha xabarlarni diqqat bilan ko‘rib chiqamiz va imkon qadar tez "
+"orada javob beramiz.  \n"
+
+#: app/handlers/main_handlers.py:553
+msgid "🔔 Iltimos, faqat matn shaklidagi ma'lumot yuboring!"
+msgstr "🔔 Iltimos, faqat matn shaklidagi ma’lumot yuboring!"
+
+#: app/handlers/main_handlers.py:556
+msgid "Yangi taklif yoki shikoyat"
+msgstr "Yangi taklif yoki shikoyat"
+
+#: app/handlers/main_handlers.py:558
+msgid "Xabar"
+msgstr "Xabar"
+
+#: app/handlers/main_handlers.py:561
+msgid "Foydalanuvchi:"
+msgstr "Foydalanuvchi:"
+
+#: app/handlers/main_handlers.py:561
+msgid "Username yo'q"
+msgstr "Username mavjud emas"
+
+#: app/handlers/main_handlers.py:562
+msgid "Telefon raqam:"
+msgstr "Telefon raqam:"
+
+#: app/handlers/main_handlers.py:573
+msgid "✅ Taklifingiz/shikoyatingiz adminga yuborildi. Rahmat!"
+msgstr "✅ Taklifingiz/shikoyatingiz adminga yuborildi. Rahmat!"
+
+#: app/handlers/main_handlers.py:587
+msgid "✏️ Foydalanuvchiga javob yozing:"
+msgstr "✏️ Foydalanuvchiga javob yozing:"
+
+#: app/handlers/main_handlers.py:604
+msgid "✅ Javob yuborildi."
+msgstr "✅ Javob yuborildi."
+
+#: app/handlers/main_handlers.py:606
+msgid "⚠️ Foydalanuvchining chatini topib bo‘lmadi. Ehtimol, u botni bloklagan."
+msgstr "⚠️ Foydalanuvchining chatini topib bo‘lmadi. Ehtimol, u botni bloklagan."
+
+#: app/handlers/main_handlers.py:608
+msgid "⚠️ Xabar yuborish uchun ma'lumotlar yetishmayapti."
+msgstr "⚠️ Xabar yuborish uchun ma’lumotlar yetishmayapti."
+
+#: app/keyboards/admin_kb.py:9
+msgid "🎁 Aksiyalar ro'yxati"
+msgstr "🎁 Aksiyalar ro‘yxati"
+
+#: app/keyboards/admin_kb.py:10
+msgid "📰 Yangiliklar ro'yxati"
+msgstr "📰 Yangiliklar ro‘yxati"
+
+#: app/keyboards/admin_kb.py:13
+msgid "➕ Aksiya qo'shish"
+msgstr "➕ Aksiya qo‘shish"
+
+#: app/keyboards/admin_kb.py:14
+msgid "➕ Yangilik qo'shish"
+msgstr "➕ Yangilik qo‘shish"
+
+#: app/keyboards/admin_kb.py:17
+msgid "🏠 Foydalanuvchi paneliga o'tish"
+msgstr "🏠 Foydalanuvchi paneliga o‘tish"
+
+#: app/keyboards/admin_kb.py:28 app/keyboards/admin_kb.py:57
+#: app/keyboards/main_kb.py:64 app/keyboards/main_kb.py:75
+#: app/keyboards/main_kb.py:86
+msgid "⬅️ Oldingi"
+msgstr "⬅️ Oldingi"
+
+#: app/keyboards/admin_kb.py:30 app/keyboards/admin_kb.py:59
+#: app/keyboards/main_kb.py:66 app/keyboards/main_kb.py:77
+#: app/keyboards/main_kb.py:88
+msgid "Keyingi ➡️"
+msgstr "Keyingi ➡️"
+
+#: app/keyboards/admin_kb.py:34 app/keyboards/admin_kb.py:63
+msgid "❎ Deaktivlashtirish"
+msgstr "❎ O‘chirish (deaktivlashtirish)"
+
+#: app/keyboards/admin_kb.py:36 app/keyboards/admin_kb.py:65
+msgid "✅ Aktivlashtirish"
+msgstr "✅ Faollashtirish"
+
+#: app/keyboards/admin_kb.py:42 app/keyboards/admin_kb.py:71
+msgid "✏️ Tahrirlash"
+msgstr "✏️ Tahrirlash"
+
+#: app/keyboards/admin_kb.py:43 app/keyboards/admin_kb.py:72
+msgid "⛔️ O'chirish"
+msgstr "⛔️ O‘chirish"
+
+#: app/keyboards/admin_kb.py:46 app/keyboards/admin_kb.py:75
+msgid "🚀 Foydalanuvchilarga tarqatish"
+msgstr "🚀 Foydalanuvchilarga yuborish"
+
+#: app/keyboards/admin_kb.py:83
+#, fuzzy
+msgid "✏️ Javob yozish"
+msgstr "✏️ Javob yozish"
+
+#: app/keyboards/auth_kb.py:7
+msgid "📱 Raqamni yuborish"
+msgstr "📱 Raqamni yuborish"
+
+#: app/keyboards/auth_kb.py:13
+msgid "Iltimos pastdagi 👇 tugma orqali 📱 telefon raqamingizni yuboring!"
+msgstr "Iltimos, pastdagi 👇 tugma orqali 📱 telefon raqamingizni yuboring!"
+
+#: app/keyboards/main_kb.py:9
+msgid "ℹ️ Biz haqimizda"
+msgstr "ℹ️ Biz haqimizda"
+
+#: app/keyboards/main_kb.py:10
+#, fuzzy
+msgid "💳 Mening balansim"
+msgstr "💳 Mening balansim"
+
+#: app/keyboards/main_kb.py:13
+#, fuzzy
+msgid "🎁 Aksiyalar"
+msgstr "🎁 Aksiyalar"
+
+#: app/keyboards/main_kb.py:14
+#, fuzzy
+msgid "🧾 Xaridlar tarixi"
+msgstr "🧾 Xaridlar tarixi"
+
+#: app/keyboards/main_kb.py:17
+#, fuzzy
+msgid "📰 Yangiliklar"
+msgstr "📰 Yangiliklar"
+
+#: app/keyboards/main_kb.py:18
+#, fuzzy
+msgid "✍️ Taklif va shikoyatlar"
+msgstr "✍️ Taklif va shikoyatlar"
+
+#: app/keyboards/main_kb.py:27
+#, fuzzy
+msgid "🛠 Admin paneliga o'tish"
+msgstr "🛠 Admin paneliga o'tish"
+
+#: app/keyboards/main_kb.py:53
+msgid "🔙 Orqaga"
+msgstr "🔙 Orqaga"
+

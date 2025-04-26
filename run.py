@@ -3,6 +3,7 @@ import logging
 import sys
 
 from aiogram import Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 from app.core.bot import bot
 from app.handlers import main_handlers, admin_handlers, auth_handlers
 from app.database.models import async_main
@@ -13,7 +14,7 @@ async def main():
     # Connection to db
     await async_main()
 
-    dp = Dispatcher()
+    dp = Dispatcher(storage=MemoryStorage())
 
     # I18n localization
     dp.message.middleware(I18nMiddleware())
@@ -35,7 +36,7 @@ if __name__ == '__main__':
             logging.FileHandler("bot.log"),
             logging.StreamHandler(sys.stdout)
         ]
-                        )  # logging
+)  # logging
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

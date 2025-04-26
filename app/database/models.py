@@ -24,6 +24,7 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(250))
     phone_number: Mapped[str] = mapped_column(String(13))
     is_admin: Mapped[bool] = mapped_column(default=False)
+    lang: Mapped[str] = mapped_column(String(2), nullable=True)
 
 
 class New(Base):

@@ -36,7 +36,16 @@ async def is_user_authenticated(chat_id: int) -> bool:
             select(User).where(User.tg_id == chat_id)
         )
         return bool(user)
+    
 
+async def set_user_lang(chat_id: int, lang: str):
+    async with async_session() as session:
+        user = await session.scalar(select(User).where(User.tg_id == chat_id))
+        if user:
+            user.lang = lang
+            await session.commit()
+            return True
+        return False
 
 
 # Promotions section

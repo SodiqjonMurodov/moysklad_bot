@@ -5,6 +5,7 @@ db.sqlite3
 test.py
 bot.log
 
+
 __pycache__
 api/__pycache__
 app/__pycache__
@@ -12,5 +13,6 @@ app/core/__pycache__
 app/database/__pycache__
 app/handlers/__pycache__
 app/keyboards/__pycache__
+app/middlewares/__pycache__
 app/utils/__pycache__
 
