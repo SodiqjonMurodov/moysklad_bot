@@ -25,13 +25,6 @@ from app.middlewares.i18n import setup_i18n
 
 router = Router()
 
-LANGUAGES = {
-    "🇷🇺 Русский": ("ru", "✅ Язык изменен на Русский."),
-    "🇬🇧 English": ("en", "✅ Language changed to English."),
-    "🇺🇿 O'zbekcha": ("uz", "✅ Til o'zbek tiliga o'zgartirildi."),
-    "🇰🇿 Қазақша": ("kz", "✅ Тіл қазақ тіліне өзгертілді."),
-}
-
 
 @router.startup()
 async def on_startup():
@@ -62,8 +55,7 @@ Bu bot orqali siz quyidagi bo'limlardan foydalanishingiz mumkin:
 📰 Yangiliklar — eng so'nggi yangiliklar va e'lonlar
 ✍️ Taklif va shikoyatlar — bizga fikr va takliflaringizni yuboring
 
-💚 Oilamizga marhamat!
-""")
+💚 Oilamizga marhamat!""")
     chat_id = message.from_user.id
     main_kb = await get_main_buttons(_, chat_id)
 
@@ -136,8 +128,7 @@ Bu bot orqali siz quyidagi bo'limlardan foydalanishingiz mumkin:
 📰 Yangiliklar — eng so'nggi yangiliklar va e'lonlar
 ✍️ Taklif va shikoyatlar — bizga fikr va takliflaringizni yuboring
 
-💚 Oilamizga marhamat!
-""")
+💚 Oilamizga marhamat!""")
     main_kb = await get_main_buttons(_, chat_id)
     return await message.answer(text=greeting_text, reply_markup=main_kb)
 
@@ -152,8 +143,7 @@ Bu bot orqali siz quyidagi bo'limlardan foydalanishingiz mumkin:
 async def cmd_about_us(message: Message, state: FSMContext, **kwargs):
     _ = kwargs["_"]
     await state.clear()
-    about_us_text = _("""
-<b>ℹ️ Biz haqimizda</b>
+    about_us_text = _("""<b>ℹ️ Biz haqimizda</b>
 
 Biz — <b>[Sizning kompaniya nomi]</b>, mijozlarimizga yuqori sifatli xizmat va mahsulotlar taqdim etishga intiladigan jamoamiz. 
 
@@ -178,8 +168,7 @@ Kompaniyamiz quyidagi yo'nalishlarda faoliyat yuritadi:
     🌐 Veb-sayt: www.ferrosoft.uz  
     📱 Telegram: @ferro_soft
 
-<b>💚 Sizga xizmat ko'rsatishdan mamnunmiz!</b>
-""")
+<b>💚 Sizga xizmat ko'rsatishdan mamnunmiz!</b>""")
     chat_id = message.from_user.id
     main_kb = await get_main_buttons(_, chat_id)
     await message.answer(text=about_us_text, reply_markup=main_kb)
@@ -199,8 +188,7 @@ async def cmd_counterparty_balance(message: Message, state: FSMContext, **kwargs
     main_kb = await get_main_buttons(_, chat_id)
     user = await get_user(chat_id)
     counterparty = await get_balance_counterparty(counterparty_id=user.api_id)
-    my_balance_text = f"""
-💳 <b>{_("Mening balansim")}</b>
+    my_balance_text = f"""💳 <b>{_("Mening balansim")}</b>
 
 🧑‍💼 <b>{_("F.I.Sh:")}</b> {user.full_name}
 📞 <b>{_("Telefon:")}</b> {user.phone_number}
@@ -217,8 +205,7 @@ async def cmd_counterparty_balance(message: Message, state: FSMContext, **kwargs
 ↩️ <b>{_("Vozvratlar soni:")}</b> {counterparty.get("returnsCount")}
 💸 <b>{_("Vozvratlar summasi:")}</b> {pretty_sum(amount=counterparty.get("returnsSum"))} {_("so'm")}
 
-❗️{_("Agar balansingizda xatolik bo'lsa, operator bilan bog'laning: @ferro_soft")}
-"""
+❗️{_("Agar balansingizda xatolik bo'lsa, operator bilan bog'laning: @ferro_soft")}"""
     await message.answer(text=my_balance_text, reply_markup=main_kb)
 
 
@@ -524,14 +511,12 @@ async def show_feedback(message: Message, state: FSMContext, **kwargs):
     await state.clear()
     chat_id = message.from_user.id
     main_kb = await get_main_buttons(_, chat_id)
-    feedback_request_text = _("""
-✍️ <b>Taklif va shikoyatlar bo'limi</b>
-                              
+    feedback_request_text = _("""✍️ <b>Taklif va shikoyatlar bo'limi</b>
+
 Sizning fikringiz biz uchun juda muhim!
 Iltimos, o'zingizni qiziqtirgan masala, taklif yoki shikoyatingizni shu yerga yozib qoldiring.
-                              
-📌 Biz barcha xabarlarni diqqat bilan ko'rib chiqamiz va imkon qadar tez orada javob beramiz.  
-""")
+
+📌 Biz barcha xabarlarni diqqat bilan ko'rib chiqamiz va imkon qadar tez orada javob beramiz.""")
     await state.set_state(FeedbackStates.AwaitFeedback)
     await message.answer(text=feedback_request_text, reply_markup=main_kb)
 
@@ -552,15 +537,13 @@ async def send_feedback_to_admins(message: Message, state: FSMContext, **kwargs)
     if not message.text:
         return await message.answer(_("🔔 Iltimos, faqat matn shaklidagi ma'lumot yuboring!"))
 
-    feedback = f"""
-<b>📩 {_('Yangi taklif yoki shikoyat')}</b>
+    feedback = f"""<b>📩 {_('Yangi taklif yoki shikoyat')}</b>
 
 <b>📝 {_('Xabar')}:</b>
 {feedback_text}
 
 <b>👤 {_('Foydalanuvchi:')}</b> @{message.from_user.username or _("Username yo'q")}
-<b>📞 {_('Telefon raqam:')}</b> {user.phone_number}
-"""
+<b>📞 {_('Telefon raqam:')}</b> {user.phone_number}"""
 
     for admin in admins:
         try:
