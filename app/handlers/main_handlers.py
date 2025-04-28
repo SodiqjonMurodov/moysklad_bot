@@ -13,9 +13,9 @@ from app.core.bot import bot, DEMAND_TEMP_ID, SALESRETURN_TEMP_ID
 from app.handlers.admin_handlers import parse_entities
 from app.handlers.auth_handlers import Reg
 from app.keyboards.admin_kb import get_feedback_answer_btn
-from app.keyboards.main_kb import get_main_buttons, get_lang_buttons, get_promos_nav, get_news_nav, get_purchase_history_nav
+from app.keyboards.main_kb import get_main_buttons, get_lang_buttons, get_promos_nav, get_news_nav, get_purchase_history_nav, get_cancel_feedback_button
 from app.keyboards.auth_kb import get_phone_request_btn
-from app.database.requests import is_user_authenticated, get_user, get_active_promo_list, get_new_list, get_admin_users_list, set_user_lang
+from app.database.requests import is_user_authenticated, get_user, get_active_promo_list, get_admin_users_list, set_user_lang, get_activate_news_list
 from api.counterparty import get_balance_counterparty
 from api.demand import get_demands_by_counterparty, get_positions_from_demand
 from api.salesreturn import get_salesreturns_by_counterparty, get_positions_from_salesreturn
@@ -27,13 +27,12 @@ router = Router()
 
 
 @router.startup()
-async def on_startup():
+async def set_bot_commands():
     _ = await setup_i18n()
 
     commands = [
-        BotCommand(command="start", description=_("Botni ishga tushurish")),
-        BotCommand(command="reg", description=_("Qayta ro'yxatdan o'tish")),
-        BotCommand(command="lang", description=_("Tilni o'zgartirish")),
+        BotCommand(command="start", description="Launch the bot / Запустить бота"),
+        BotCommand(command="reg", description="Re-registration / Перерегистрация")
     ]
 
     await bot.set_my_commands(commands)
@@ -58,6 +57,7 @@ Bu bot orqali siz quyidagi bo'limlardan foydalanishingiz mumkin:
 💚 Oilamizga marhamat!""")
     chat_id = message.from_user.id
     main_kb = await get_main_buttons(_, chat_id)
+    print(f"User {chat_id} started the bot.")
 
     if not await is_user_authenticated(chat_id):
         kb = await get_phone_request_btn(_)
@@ -68,8 +68,13 @@ Bu bot orqali siz quyidagi bo'limlardan foydalanishingiz mumkin:
     return await message.answer(text=greeting_text, reply_markup=main_kb)
 
 
-@router.message(Command("lang"))
-async def cmd_user_lang(message: Message, state: FSMContext, **kwargs):
+@router.message(F.text.in_([
+    "🌐 Tilni o'zgartirish", 
+    "🌐 Изменить язык", 
+    "🌐 Тілді өзгерту", 
+    "🌐 Change language"
+    ]))
+async def change_user_lang(message: Message, state: FSMContext, **kwargs):
     _ = kwargs["_"]
     await state.clear()
     kb = await get_lang_buttons(_)
@@ -283,7 +288,7 @@ async def navigate_posts(callback_query: CallbackQuery, **kwargs):
 
 # Yangiliklar bo'limi
 async def send_new_page(_: Callable, message: Message, index: int):
-    news = await get_new_list()
+    news = await get_activate_news_list()
 
     if news is None:
         return await message.answer(_("❌ Hozircha yangiliklar mavjud emas."))
@@ -409,7 +414,6 @@ async def send_purchase_history_page(_: Callable, message: Message, sorted_data:
             doc_id=data["id"],
             template_id=SALESRETURN_TEMP_ID
         )
-
     elif "demand" in data["meta"]["href"]:
         doc_type = _("Xarid")
         positions = await get_positions_from_demand(data["id"])
@@ -509,8 +513,7 @@ class FeedbackStates(StatesGroup):
 async def show_feedback(message: Message, state: FSMContext, **kwargs):
     _ = kwargs["_"]
     await state.clear()
-    chat_id = message.from_user.id
-    main_kb = await get_main_buttons(_, chat_id)
+    main_kb = await get_cancel_feedback_button(_)
     feedback_request_text = _("""✍️ <b>Taklif va shikoyatlar bo'limi</b>
 
 Sizning fikringiz biz uchun juda muhim!
@@ -586,9 +589,17 @@ async def send_feedback_answer_to_user(_: Callable, message: Message, state: FSM
             )
             await message.answer(_("✅ Javob yuborildi."))
         except TelegramBadRequest:
-            await message.answer(_("⚠️ Foydalanuvchining chatini topib bo‘lmadi. Ehtimol, u botni bloklagan."))
+            await message.answer(_("⚠️ Foydalanuvchining chatini topib bo'lmadi. Ehtimol, u botni bloklagan."))
     else:
         await message.answer(_("⚠️ Xabar yuborish uchun ma'lumotlar yetishmayapti."))
 
     await state.clear()
+
+
+@router.callback_query(F.data == "cancelFeedbackMessage")
+async def cancel_feedback_message(callback_query: CallbackQuery, state: FSMContext, **kwargs):
+    _ = kwargs["_"]
+    await state.clear()
+    await callback_query.answer()
+    await callback_query.message.answer(_("❌ Taklif yoki shikoyat yuborish bekor qilindi."))
 

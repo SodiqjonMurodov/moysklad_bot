@@ -10,8 +10,8 @@ from app.keyboards.admin_kb import get_admin_panel_buttons, get_admin_promos_nav
 from app.keyboards.main_kb import get_main_buttons
 from app.database.models import Promotion, New
 from app.database.requests import (set_promo, get_promo_list, set_promo_activation, update_promo, delete_promo, get_promo,
-                                   get_users_list, set_new, get_new_list, set_new_activation, update_new,
-                                   delete_new, get_new)
+                                   get_users_list, set_new, set_new_activation, update_new,
+                                   delete_new, get_new, get_news_list)
 
 router = Router()
 
@@ -29,7 +29,12 @@ async def cmd_admin_panel(message: Message, state: FSMContext, **kwargs):
     await message.answer(text=_("Welcome to Admin panel!"), reply_markup=admin_kb)
 
 
-@router.message(F.text.in_(["🏠 Foydalanuvchi paneliga o'tish", "🏠 Go to User panel", "🏠 Пайдаланушы панеліне өту", "🏠 Перейти в пользовательскую панель"]))
+@router.message(F.text.in_([
+    "🏠 Foydalanuvchi paneliga o'tish", 
+    "🏠 Go to User panel", 
+    "🏠 Пайдаланушы панеліне өту", 
+    "🏠 Перейти в пользовательскую панель"
+    ]))
 async def cmd_home_menu(message: Message, state: FSMContext, **kwargs):
     _ = kwargs["_"]
     await state.clear()
@@ -56,7 +61,7 @@ async def send_admin_promo_page(_: Callable, message: Message, index: int):
         return await message.answer(_("❌ Aksiyalar mavjud emas."))
 
     if not isinstance(index, int):
-        return await message.answer(_("⚠️ Noto‘g‘ri sahifa indeksi."))
+        return await message.answer(_("⚠️ Noto'g'ri sahifa indeksi."))
 
     total = len(promos)
     promo_page = None
@@ -323,13 +328,13 @@ class NewStates(StatesGroup):
 
 
 async def send_admin_new_page(_: Callable, message: Message, index: int):
-    news = await get_new_list()
+    news = await get_news_list()
 
     if not news:
         return await message.answer(_("❌ Yangiliklar mavjud emas."))
 
     if not isinstance(index, int):
-        return await message.answer(_("⚠️ Noto‘g‘ri sahifa indeksi."))
+        return await message.answer(_("⚠️ Noto'g'ri sahifa indeksi."))
 
     new_page = None
     total = len(news)

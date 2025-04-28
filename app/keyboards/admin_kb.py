@@ -1,5 +1,5 @@
 from aiogram.utils.keyboard import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
-from app.database.requests import get_promo_list, get_new_list
+from app.database.requests import get_promo_list, get_news_list
 from typing import Callable
 
 
@@ -51,7 +51,7 @@ async def get_admin_promos_nav(_: Callable, index: int, total: int):
 
 async def get_admin_news_nav(_: Callable, index: int, total: int):
     nav_buttons = []
-    news = await get_new_list()
+    news = await get_news_list()
     new = news[index]
     if index > 0:
         nav_buttons.append(InlineKeyboardButton(text=_("⬅️ Oldingi"), callback_data=f"prevAdminNew_{index - 1}_{total}"))

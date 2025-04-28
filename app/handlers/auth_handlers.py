@@ -69,7 +69,6 @@ async def got_name(message: Message, state: FSMContext, **kwargs):
     name = message.text
     data = await state.get_data()
     chat_id = message.from_user.id
-    main_kb = await get_main_buttons(_, chat_id)
 
     counterparty = await create_counterparty(name=name, phone=data['phone_number'])
     if counterparty is None:
@@ -83,6 +82,7 @@ async def got_name(message: Message, state: FSMContext, **kwargs):
             phone_number=data['phone_number']
         )
         await create_user(query=user_data)
+        main_kb = await get_main_buttons(_, chat_id)
         await message.answer(text=_("🎉 Siz ro'yxatdan muvaffaqiyatli o'tdingiz."), reply_markup=main_kb)
     await state.clear()
 

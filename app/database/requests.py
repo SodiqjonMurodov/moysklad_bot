@@ -122,7 +122,17 @@ async def set_new(query):
         await session.commit()
 
 
-async def get_new_list():
+async def get_news_list():
+    async with async_session() as session:
+        result = await session.execute(
+            select(New)
+            .order_by(desc(New.created_at))
+        )
+        news = result.scalars().all()
+        return news if news else None
+    
+
+async def get_activate_news_list():
     async with async_session() as session:
         result = await session.execute(
             select(New)

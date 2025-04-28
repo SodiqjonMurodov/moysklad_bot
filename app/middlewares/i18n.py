@@ -27,15 +27,12 @@ class I18nMiddleware(BaseMiddleware):
     ) -> Translations:
         chat_id = event.from_user.id
         user = await get_user(int(chat_id))
-
-        if user.lang:
+        
+        if user and user.lang:
             user_lang = user.lang
-            print(f"User language1: {user_lang}")
         else:
             user_lang = event.from_user.language_code
-            print(f"User language2: {user_lang}")
         lang = user_lang if user_lang in ["uz", "ru", "en", "kz"] else DEFAULT_LANG
-        print(f"User language_lang: {lang}")
 
         _ = await setup_i18n(lang)
         data["_"] = _

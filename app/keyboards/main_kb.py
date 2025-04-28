@@ -4,6 +4,7 @@ from typing import Callable
 
 
 async def get_main_buttons(_: Callable, chat_id) -> ReplyKeyboardMarkup:
+    print(f"get_main_buttons: {chat_id}")
     buttons = [
         [
             KeyboardButton(text=_("ℹ️ Biz haqimizda")),
@@ -15,17 +16,20 @@ async def get_main_buttons(_: Callable, chat_id) -> ReplyKeyboardMarkup:
         ],
         [
             KeyboardButton(text=_("📰 Yangiliklar")),
-            KeyboardButton(text=_("✍️ Taklif va shikoyatlar"))
+            KeyboardButton(text=_("🌐 Tilni o'zgartirish"))
+        ],
+        [
+            KeyboardButton(text=_("✍️ Taklif va shikoyatlar")),
         ]
     ]
 
     # Userni admin ekanligini tekshirish
     user = await get_user(chat_id)
-    if user:
-        if user.is_admin:
-            buttons.append([
-                KeyboardButton(text=_("🛠 Admin paneliga o'tish"))
-            ])
+    if user and user.is_admin:
+        print(f"User {chat_id} is admin")
+        buttons.append([
+            KeyboardButton(text=_("🛠 Admin paneliga o'tish"))
+        ])
 
     return ReplyKeyboardMarkup(keyboard=buttons, resize_keyboard=True)
 
@@ -81,3 +85,12 @@ async def get_purchase_history_nav(_: Callable, index: int, total: int):
 
     return InlineKeyboardMarkup(inline_keyboard=[buttons])
 
+
+async def get_cancel_feedback_button(_: Callable):
+    button = [
+        [
+            InlineKeyboardButton(text=_("❌ Bekor qilish"), callback_data="cancelFeedbackMessage")
+        ]
+    ]
+
+    return InlineKeyboardMarkup(inline_keyboard=button)
